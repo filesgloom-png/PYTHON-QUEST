@@ -163,9 +163,11 @@ class QuizActivity : Activity() {
         val q = questions[questionIndex]
         val correct = index == q.answer
         val firstAnswer = answeredIds.add(questionIndex)
+        var firstReward = false
         if (correct) {
             correctCount++
-            if (earnedIds.add(questionIndex)) {
+            firstReward = earnedIds.add(questionIndex)
+            if (firstReward) {
                 val prefs = getSharedPreferences("python_quest", MODE_PRIVATE)
                 val newXp = prefs.getInt("xp", 0) + 10
                 prefs.edit()
@@ -176,7 +178,7 @@ class QuizActivity : Activity() {
                     .apply()
             }
             feedback.setTextColor(green)
-            feedback.text = "Верно! ${if (earnedIds.contains(questionIndex)) "Награда за этот вопрос уже учтена или начислена." else ""}\n\n${q.explanation}"
+            feedback.text = "Верно! ${if (firstReward) "+10 XP начислено." else "XP за этот вопрос повторно не начисляется."}\n\n${q.explanation}"
         } else {
             feedback.setTextColor(white)
             feedback.text = "Пока неверно. Попробуй ещё раз в следующем прохождении.\n\nОбъяснение: ${q.explanation}"
