@@ -152,9 +152,9 @@ class MainActivity : Activity() {
             { it.trim() == "3\n4" }),
         Lesson("Работа с файлами", "Читай и записывай текстовые данные",
             "Функция open() открывает файл. Режим w записывает текст и создаёт файл, если его нет; режим r читает существующий файл. Конструкция with автоматически закрывает файл после работы.",
-            "with open(\\"notes.txt\\", \\"w\\", encoding=\\"utf-8\\") as file:\\n    file.write(\\"Привет!\\")\\nwith open(\\"notes.txt\\", \\"r\\", encoding=\\"utf-8\\") as file:\\n    print(file.read())",
-            "with open(\\"notes.txt\\", \\"w\\", encoding=\\"utf-8\\") as file:\\n    file.write(\\"Привет!\\")\\nwith open(\\"notes.txt\\", \\"r\\", encoding=\\"utf-8\\") as file:\\n    print(file.read())",
-            "Используй with open(\\"notes.txt\\", \\"w\\", encoding=\\"utf-8\\") для записи текста Привет!, затем открой файл в режиме r и выведи file.read().",
+            "with open(\"notes.txt\", \"w\", encoding=\"utf-8\") as file:\n    file.write(\"Привет!\")\nwith open(\"notes.txt\", \"r\", encoding=\"utf-8\") as file:\n    print(file.read())",
+            "with open(\"notes.txt\", \"w\", encoding=\"utf-8\") as file:\n    file.write(\"Привет!\")\nwith open(\"notes.txt\", \"r\", encoding=\"utf-8\") as file:\n    print(file.read())",
+            "Используй with open(\"notes.txt\", \"w\", encoding=\"utf-8\") для записи текста Привет!, затем открой файл в режиме r и выведи file.read().",
             { it.trim() == "Привет!" })
     )
 
