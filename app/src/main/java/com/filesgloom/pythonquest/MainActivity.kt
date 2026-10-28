@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
@@ -56,7 +57,10 @@ class MainActivity : Activity() {
     private lateinit var continueButton: Button
     private lateinit var courseScroll: ScrollView
     private lateinit var lessonCard: LinearLayout
+    private lateinit var lessonSearch: EditText
+    private lateinit var searchEmptyState: TextView
     private val lessonButtonsByIndex = mutableListOf<Button>()
+    private val sectionDecorations = mutableMapOf<Int, MutableList<View>>()
 
     private data class CourseSection(
         val start: Int,
@@ -805,9 +809,32 @@ class MainActivity : Activity() {
         root.addView(continueButton, params(top = 0, bottom = 18))
 
         addText(root, "ТВОИ УРОКИ", 13f, green, true)
+        lessonSearch = EditText(this).apply {
+            setTextColor(white)
+            setHintTextColor(muted)
+            textSize = 15f
+            singleLine = true
+            hint = "Найти урок: например, циклы, списки, файлы…"
+            setPadding(dp(14), dp(10), dp(14), dp(10))
+            background = rounded(panel, 12)
+        }
+        root.addView(lessonSearch, params(top = 7, bottom = 5))
+        lessonSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterLessons(s?.toString().orEmpty())
+            }
+            override fun afterTextChanged(s: Editable?) = Unit
+        })
         lessonButtons = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        root.addView(lessonButtons, params(top = 8, bottom = 18))
+        root.addView(lessonButtons, params(top = 4, bottom = 8))
+        searchEmptyState = text("Ничего не найдено. Попробуй другое слово.", 13f, muted, false).apply {
+            visibility = View.GONE
+            setPadding(dp(4), dp(8), dp(4), dp(12))
+        }
+        root.addView(searchEmptyState)
         lessonButtonsByIndex.clear()
+        sectionDecorations.clear()
         lessons.forEachIndexed { index, lesson ->
             val startingSection = courseSections.firstOrNull { it.start == index }
             if (startingSection != null) {
@@ -815,7 +842,8 @@ class MainActivity : Activity() {
                     setPadding(dp(4), dp(12), dp(4), dp(3))
                 }
                 lessonButtons.addView(heading, params(top = 5, bottom = 2))
-                addText(lessonButtons, startingSection.description, 13f, muted, false)
+                val description = addText(lessonButtons, startingSection.description, 13f, muted, false)
+                sectionDecorations[startingSection.start] = mutableListOf(heading, description)
             }
 
             val button = Button(this).apply {
@@ -827,7 +855,10 @@ class MainActivity : Activity() {
                 background = rounded(panel, 14)
                 setPadding(dp(14), dp(5), dp(10), dp(5))
                 minHeight = dp(62)
-                setOnClickListener { showLesson(index) }
+                setOnClickListener {
+                    showLesson(index)
+                    courseScroll.post { courseScroll.smoothScrollTo(0, lessonCard.top) }
+                }
             }
             lessonButtonsByIndex.add(button)
             lessonButtons.addView(button, params(bottom = 7))
@@ -851,9 +882,12 @@ class MainActivity : Activity() {
                 }
                 checkpointCard.addView(repeatButton, params(top = 3))
                 lessonButtons.addView(checkpointCard, params(top = 5, bottom = 12))
+                val sectionStart = courseSections.first { index in it.start..it.end }.start
+                sectionDecorations.getOrPut(sectionStart) { mutableListOf() }.add(checkpointCard)
             }
         }
 
+        filterLessons(lessonSearch.text.toString())
         lessonCard = card().apply { setPadding(dp(18), dp(18), dp(18), dp(18)) }
         lessonTitle = addText(lessonCard, "", 23f, white, true)
         lessonText = addText(lessonCard, "", 15f, muted, false)
@@ -984,6 +1018,31 @@ class MainActivity : Activity() {
         levelProgress.progress = xpIntoLevel
         levelProgressText.text = "$xpIntoLevel / 100 XP до уровня ${level + 1}"
         updateContinueButton()
+    }
+
+    private fun filterLessons(query: String) {
+        val normalized = query.trim().lowercase()
+        var visibleCount = 0
+        lessonButtonsByIndex.forEachIndexed { index, button ->
+            val lesson = lessons[index]
+            val matches = normalized.isEmpty() ||
+                lesson.title.lowercase().contains(normalized) ||
+                lesson.subtitle.lowercase().contains(normalized)
+            button.visibility = if (matches) View.VISIBLE else View.GONE
+            if (matches) visibleCount++
+        }
+        courseSections.forEach { section ->
+            val hasMatch = lessons.indices.any { index ->
+                index in section.start..section.end &&
+                    (normalized.isEmpty() ||
+                        lessons[index].title.lowercase().contains(normalized) ||
+                        lessons[index].subtitle.lowercase().contains(normalized))
+            }
+            sectionDecorations[section.start]?.forEach { decoration ->
+                decoration.visibility = if (normalized.isEmpty() || hasMatch) View.VISIBLE else View.GONE
+            }
+        }
+        searchEmptyState.visibility = if (visibleCount == 0) View.VISIBLE else View.GONE
     }
 
     private fun updateContinueButton() {
