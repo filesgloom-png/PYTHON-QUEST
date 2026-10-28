@@ -148,6 +148,7 @@ class QuizActivity : Activity() {
         hintButton.isEnabled = true
         hintButton.alpha = 1f
         nextButton.text = if (questionIndex == questions.lastIndex) "Показать результат" else "Следующий вопрос"
+        nextButton.setOnClickListener { nextQuestion() }
         nextButton.isEnabled = false
         optionsBox.removeAllViews()
         q.options.forEachIndexed { index, option ->
@@ -162,7 +163,7 @@ class QuizActivity : Activity() {
         answered = true
         val q = questions[questionIndex]
         val correct = index == q.answer
-        val firstAnswer = answeredIds.add(questionIndex)
+        answeredIds.add(questionIndex)
         var firstReward = false
         if (correct) {
             correctCount++
