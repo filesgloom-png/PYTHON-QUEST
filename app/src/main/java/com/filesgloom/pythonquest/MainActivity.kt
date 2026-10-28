@@ -52,6 +52,7 @@ class MainActivity : Activity() {
     private lateinit var lessonText: TextView
     private lateinit var walkthroughText: TextView
     private lateinit var notesEditor: EditText
+    private lateinit var noteCountText: TextView
     private lateinit var example: TextView
     private lateinit var stats: TextView
     private lateinit var progressText: TextView
@@ -962,12 +963,15 @@ class MainActivity : Activity() {
             hint = "Запиши важные мысли, вопросы или примеры…"
             setSingleLine(false)
         }
+        noteCountText = addText(lessonCard, "0 символов", 12f, muted, false)
         notesEditor.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val note = s?.toString().orEmpty()
+                noteCountText.text = "${note.length} символов"
                 if (lessonLoaded) {
                     getSharedPreferences("python_quest", MODE_PRIVATE).edit()
-                        .putString("notes_$currentLesson", s?.toString().orEmpty())
+                        .putString("notes_$currentLesson", note)
                         .apply()
                 }
             }
@@ -1079,6 +1083,7 @@ class MainActivity : Activity() {
         lessonText.text = lesson.explanation
         notesEditor.setText(getSharedPreferences("python_quest", MODE_PRIVATE)
             .getString("notes_$index", ""))
+        noteCountText.text = "${notesEditor.text.length} символов"
         walkthroughText.text = if (lesson.walkthrough.isNotBlank()) lesson.walkthrough else
             "Как разобраться в примере:\n1. Запусти код без изменений и посмотри на результат.\n2. Найди в коде команду или конструкцию из объяснения выше.\n3. Измени одно значение, запусти код ещё раз и сравни результат."
         example.text = lesson.example
