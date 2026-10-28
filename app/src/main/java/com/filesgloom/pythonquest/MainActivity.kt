@@ -41,12 +41,14 @@ class MainActivity : Activity() {
     private var lessonLoaded = false
     private var xp = 0
     private val completed = mutableSetOf<Int>()
+    private val favorites = mutableSetOf<Int>()
     private var lessonFilter = 0
     private val lessonFilterButtons = mutableListOf<Button>()
     private lateinit var root: LinearLayout
     private lateinit var editor: EditText
     private lateinit var output: TextView
     private lateinit var lessonTitle: TextView
+    private lateinit var favoriteButton: Button
     private lateinit var lessonText: TextView
     private lateinit var walkthroughText: TextView
     private lateinit var example: TextView
@@ -709,7 +711,10 @@ class MainActivity : Activity() {
         window.navigationBarColor = bg
         val prefs = getSharedPreferences("python_quest", MODE_PRIVATE)
         xp = prefs.getInt("xp", 0)
-        for (i in lessons.indices) if (prefs.getBoolean("done_$i", false)) completed.add(i)
+        for (i in lessons.indices) {
+            if (prefs.getBoolean("done_$i", false)) completed.add(i)
+            if (prefs.getBoolean("favorite_$i", false)) favorites.add(i)
+        }
         buildUi()
         showLesson(0)
     }
@@ -721,8 +726,10 @@ class MainActivity : Activity() {
         val prefs = getSharedPreferences("python_quest", MODE_PRIVATE)
         xp = prefs.getInt("xp", xp)
         completed.clear()
+        favorites.clear()
         for (i in lessons.indices) {
             if (prefs.getBoolean("done_$i", false)) completed.add(i)
+            if (prefs.getBoolean("favorite_$i", false)) favorites.add(i)
         }
 
         val level = 1 + xp / 100
@@ -737,6 +744,7 @@ class MainActivity : Activity() {
             button.text = "${if (completed.contains(index)) "✓" else (index + 1).toString()}.  ${lessons[index].title}\n      ${lessons[index].subtitle}"
         }
         updateLessonFilterButtons()
+        updateFavoriteButton()
         filterLessons(lessonSearch.text.toString())
     }
 
@@ -835,7 +843,7 @@ class MainActivity : Activity() {
             gravity = Gravity.CENTER_VERTICAL
         }
         lessonFilterButtons.clear()
-        listOf("Все", "Не пройдены", "Пройдены").forEachIndexed { filterIndex, label ->
+        listOf("Все", "Не пройдены", "Пройдены", "Избранное").forEachIndexed { filterIndex, label ->
             val filterButton = Button(this).apply {
                 text = label
                 textSize = 11f
@@ -918,6 +926,22 @@ class MainActivity : Activity() {
         filterLessons(lessonSearch.text.toString())
         lessonCard = card().apply { setPadding(dp(18), dp(18), dp(18), dp(18)) }
         lessonTitle = addText(lessonCard, "", 23f, white, true)
+        favoriteButton = Button(this).apply {
+            textSize = 13f
+            isAllCaps = false
+            setOnClickListener {
+                if (favorites.remove(currentLesson)) {
+                    getSharedPreferences("python_quest", MODE_PRIVATE).edit().putBoolean("favorite_$currentLesson", false).apply()
+                } else {
+                    favorites.add(currentLesson)
+                    getSharedPreferences("python_quest", MODE_PRIVATE).edit().putBoolean("favorite_$currentLesson", true).apply()
+                }
+                updateFavoriteButton()
+                updateLessonFilterButtons()
+                filterLessons(lessonSearch.text.toString())
+            }
+        }
+        lessonCard.addView(favoriteButton, params(top = 0, bottom = 4))
         lessonText = addText(lessonCard, "", 15f, muted, false)
         addText(lessonCard, "РАЗБОР ПО ШАГАМ", 11f, green, true)
         walkthroughText = addText(lessonCard, "", 14f, white, false).apply {
@@ -1025,6 +1049,7 @@ class MainActivity : Activity() {
         currentLesson = index
         val lesson = lessons[index]
         lessonTitle.text = "Урок ${index + 1}. ${lesson.title}"
+        updateFavoriteButton()
         lessonText.text = lesson.explanation
         walkthroughText.text = if (lesson.walkthrough.isNotBlank()) lesson.walkthrough else
             "Как разобраться в примере:\n1. Запусти код без изменений и посмотри на результат.\n2. Найди в коде команду или конструкцию из объяснения выше.\n3. Измени одно значение, запусти код ещё раз и сравни результат."
@@ -1048,6 +1073,13 @@ class MainActivity : Activity() {
         updateContinueButton()
     }
 
+    private fun updateFavoriteButton() {
+        val saved = currentLesson in favorites
+        favoriteButton.text = if (saved) "★ Убрать из избранного" else "☆ Добавить в избранное"
+        favoriteButton.background = rounded(if (saved) panelAlt else panel, 10)
+        favoriteButton.setTextColor(if (saved) green else white)
+    }
+
     private fun updateLessonFilterButtons() {
         lessonFilterButtons.forEachIndexed { index, button ->
             val selected = index == lessonFilter
@@ -1066,6 +1098,7 @@ class MainActivity : Activity() {
             val matchesStatus = when (lessonFilter) {
                 1 -> index !in completed
                 2 -> index in completed
+                3 -> index in favorites
                 else -> true
             }
             return matchesQuery && matchesStatus
@@ -1091,6 +1124,8 @@ class MainActivity : Activity() {
             normalized.isNotEmpty() -> "Ничего не найдено. Попробуй другое слово."
             lessonFilter == 1 -> "Все уроки уже пройдены."
             lessonFilter == 2 -> "Пока нет пройденных уроков."
+            lessonFilter == 3 && normalized.isNotEmpty() -> "Нет избранных уроков по этому запросу."
+            lessonFilter == 3 -> "Добавляй уроки в избранное кнопкой под названием урока."
             else -> "Ничего не найдено. Попробуй другое слово."
         }
         searchEmptyState.visibility = if (visibleCount == 0) View.VISIBLE else View.GONE
