@@ -591,6 +591,17 @@ class MainActivity : Activity() {
             setOnClickListener { runCode(false) }
         }
         lessonCard.addView(runButton, params(bottom = 7))
+        val resetCodeButton = Button(this).apply {
+            text = "↺  Вернуть исходный код"
+            isAllCaps = false
+            setTextColor(white)
+            background = rounded(panelAlt, 12)
+            setOnClickListener {
+                editor.setText(lessons[currentLesson].starter)
+                showOutput("Исходный код урока восстановлен. Можешь изменить его и запустить снова.", false)
+            }
+        }
+        lessonCard.addView(resetCodeButton, params(bottom = 7))
         val hintButton = Button(this).apply {
             text = "Подсказка"
             isAllCaps = false
