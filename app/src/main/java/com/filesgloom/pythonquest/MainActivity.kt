@@ -367,10 +367,10 @@ class MainActivity : Activity() {
             "Используй bisect_left() для поиска позиции вставки чисел 25 и 30 в список [10, 20, 30, 40].",
             { it.trim() == "2\n2" }),
         Lesson("Шаблоны строк Template", "Подставляй значения в текст",
-            "Класс Template из string позволяет подставлять значения по именованным маркерам вида $name. Метод substitute() формирует строку на основе словаря.",
-            "from string import Template\nmessage = Template(\"Привет, $name! Город: $city.\")\nprint(message.substitute(name=\"Оля\", city=\"Львов\"))",
-            "from string import Template\nmessage = Template(\"Привет, $name! Город: $city.\")\nprint(message.substitute(name=\"Оля\", city=\"Львов\"))",
-            "Создай Template со строкой Привет, $name! Город: $city. Подставь имя Оля и город Львов.",
+            "Класс Template из string позволяет подставлять значения по именованным маркерам вида \$name. Метод substitute() формирует строку на основе словаря.",
+            "from string import Template\nmessage = Template(\"Привет, \$name! Город: \$city.\")\nprint(message.substitute(name=\"Оля\", city=\"Львов\"))",
+            "from string import Template\nmessage = Template(\"Привет, \$name! Город: \$city.\")\nprint(message.substitute(name=\"Оля\", city=\"Львов\"))",
+            "Создай Template со строкой Привет, \$name! Город: \$city. Подставь имя Оля и город Львов.",
             { it.trim() == "Привет, Оля! Город: Львов." })
     )
 
