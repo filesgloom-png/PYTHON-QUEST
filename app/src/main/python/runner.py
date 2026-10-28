@@ -22,7 +22,7 @@ class LimitedStringIO(io.StringIO):
             super().write(chunk)
             self.written += len(chunk)
         if len(value) > remaining and not self.truncated:
-            super().write("\\n...[вывод обрезан: превышен лимит 50000 символов]...")
+            super().write("\n...[вывод обрезан: превышен лимит 50000 символов]...")
             self.truncated = True
         return len(value)
 
