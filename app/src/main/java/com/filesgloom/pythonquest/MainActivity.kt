@@ -2,6 +2,8 @@ package com.filesgloom.pythonquest
 
 import android.app.Activity
 import android.content.Intent
+import android.content.ClipboardManager
+import android.content.ClipData
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
@@ -15,6 +17,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 import com.chaquo.python.Python
 
 private data class Lesson(
@@ -615,6 +618,23 @@ class MainActivity : Activity() {
             background = rounded(Color.rgb(7, 12, 8), 10)
             setPadding(dp(12), dp(12), dp(12), dp(12))
         }
+        val copyOutputButton = Button(this).apply {
+            text = "⧉  Копировать результат"
+            isAllCaps = false
+            setTextColor(white)
+            background = rounded(panelAlt, 12)
+            setOnClickListener {
+                val value = output.text.toString()
+                if (value.isBlank() || value == "Результат появится здесь.") {
+                    Toast.makeText(this@MainActivity, "Сначала запусти код", Toast.LENGTH_SHORT).show()
+                } else {
+                    val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                    clipboard.setPrimaryClip(ClipData.newPlainText("Python Quest — результат", value))
+                    Toast.makeText(this@MainActivity, "Результат скопирован", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        lessonCard.addView(copyOutputButton, params(top = 7, bottom = 4))
         val checkButton = Button(this).apply {
             text = "✓  Проверить задание"
             isAllCaps = false
