@@ -813,7 +813,7 @@ class MainActivity : Activity() {
             setTextColor(white)
             setHintTextColor(muted)
             textSize = 15f
-            singleLine = true
+            setSingleLine(true)
             hint = "Найти урок: например, циклы, списки, файлы…"
             setPadding(dp(14), dp(10), dp(14), dp(10))
             background = rounded(panel, 12)
