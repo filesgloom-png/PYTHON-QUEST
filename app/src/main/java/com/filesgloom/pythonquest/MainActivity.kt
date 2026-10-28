@@ -1,6 +1,7 @@
 package com.filesgloom.pythonquest
 
 import android.app.Activity
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
@@ -470,6 +471,16 @@ class MainActivity : Activity() {
         hero.addView(levelProgress, params(top = 2, bottom = 2))
         levelProgressText = addText(hero, "", 12f, muted, false)
         root.addView(hero, params(top = 18, bottom = 16))
+
+        val quizButton = Button(this).apply {
+            text = "✓  Проверить знания"
+            textSize = 15f
+            isAllCaps = false
+            setTextColor(Color.rgb(8, 33, 15))
+            background = rounded(green, 12)
+            setOnClickListener { startActivity(Intent(this@MainActivity, QuizActivity::class.java)) }
+        }
+        root.addView(quizButton, params(top = 0, bottom = 16))
 
         addText(root, "ТВОИ УРОКИ", 13f, green, true)
         lessonButtons = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
