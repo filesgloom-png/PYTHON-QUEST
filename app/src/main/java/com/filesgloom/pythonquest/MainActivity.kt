@@ -125,7 +125,13 @@ class MainActivity : Activity() {
             "name = \"Мир\"\nprint(f\"Привет, {name}!\")",
             "name = \"Мир\"\nprint(f\"Привет, {name}!\")",
             "Создай name = \"Мир\" и выведи приветствие с помощью f\"Привет, {name}!\".",
-            { it.trim() == "Привет, Мир!" })
+            { it.trim() == "Привет, Мир!" }),
+        Lesson("Методы списков", "Добавляй и удаляй элементы",
+            "Метод append() добавляет элемент в конец списка. Метод remove() удаляет первое совпадающее значение, а len() показывает количество элементов.",
+            "tasks = [\"учиться\", \"практиковаться\"]\ntasks.append(\"повторять\")\nprint(len(tasks))\ntasks.remove(\"учиться\")\nprint(tasks)",
+            "tasks = [\"учиться\", \"практиковаться\"]\ntasks.append(\"повторять\")\nprint(len(tasks))\ntasks.remove(\"учиться\")\nprint(tasks)",
+            "Создай список tasks, добавь элемент через append(), выведи длину, удали первый элемент через remove() и выведи список.",
+            { it.trim() == "3\n['практиковаться', 'повторять']" })
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
