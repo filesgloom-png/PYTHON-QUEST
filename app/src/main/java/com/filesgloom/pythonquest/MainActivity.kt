@@ -119,7 +119,13 @@ class MainActivity : Activity() {
             "word = \"python\"\nprint(word.upper())\nprint(word.capitalize())",
             "word = \"python\"\nprint(word.upper())\nprint(word.capitalize())",
             "Создай word = \"python\". Выведи word.upper(), а затем word.capitalize().",
-            { it.trim() == "PYTHON\nPython" })
+            { it.trim() == "PYTHON\nPython" }),
+        Lesson("F-строки", "Вставляй значения в текст",
+            "F-строки позволяют подставлять значения переменных внутрь текста. Поставь букву f перед кавычками, а имя переменной заключи в фигурные скобки.",
+            "name = \"Мир\"\nprint(f\"Привет, {name}!\")",
+            "name = \"Мир\"\nprint(f\"Привет, {name}!\")",
+            "Создай name = \"Мир\" и выведи приветствие с помощью f\"Привет, {name}!\".",
+            { it.trim() == "Привет, Мир!" })
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
