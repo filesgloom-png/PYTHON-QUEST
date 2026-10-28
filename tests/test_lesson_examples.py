@@ -108,6 +108,14 @@ def _extract_lessons(source):
         expected = _decode_kotlin_string(expected_match.group(1))
         lessons.append((title, example, starter, expected))
         cursor = close_paren + 1
+        while cursor < len(source) and source[cursor].isspace():
+            cursor += 1
+        if cursor < len(source) and source[cursor] == ",":
+            cursor += 1
+            continue
+        if cursor < len(source) and source[cursor] == ")":
+            break
+        raise AssertionError("Unexpected text after Lesson(...) constructor")
     return lessons
 
 
