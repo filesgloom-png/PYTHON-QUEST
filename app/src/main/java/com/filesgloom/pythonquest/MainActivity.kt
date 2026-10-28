@@ -143,7 +143,13 @@ class MainActivity : Activity() {
             "import math\nprint(math.sqrt(16))",
             "import math\nprint(math.sqrt(16))",
             "Подключи модуль math и выведи квадратный корень из 16 с помощью math.sqrt(16).",
-            { it.trim() == "4.0" })
+            { it.trim() == "4.0" }),
+        Lesson("Множества и кортежи", "Храни уникальные и неизменяемые данные",
+            "Множество set хранит только уникальные элементы, поэтому повторения удаляются. Кортеж tuple похож на список, но его элементы нельзя изменить после создания.",
+            "numbers = {1, 2, 2, 3}\nprint(len(numbers))\npoint = (4, 5)\nprint(point[0])",
+            "numbers = {1, 2, 2, 3}\nprint(len(numbers))\npoint = (4, 5)\nprint(point[0])",
+            "Создай множество {1, 2, 2, 3} и выведи его длину. Затем создай кортеж (4, 5) и выведи первый элемент.",
+            { it.trim() == "3\n4" })
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
