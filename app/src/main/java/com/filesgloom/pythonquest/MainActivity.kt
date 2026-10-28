@@ -401,7 +401,7 @@ class MainActivity : Activity() {
             "from string import Template\nmessage = Template(\"Привет, \$name! Город: \$city.\")\nprint(message.substitute(name=\"Оля\", city=\"Львов\"))",
             "from string import Template\nmessage = Template(\"Привет, \$name! Город: \$city.\")\nprint(message.substitute(name=\"Оля\", city=\"Львов\"))",
             "Создай Template со строкой Привет, \$name! Город: \$city. Подставь имя Оля и город Львов.",
-            { it.trim() == "Привет, Оля! Город: Львов." }, walkthrough = "1. Template хранит маркеры вида \$name, а substitute() подставляет вместо них значения.\n2. Найди обозначения $name и место, где передаётся словарь значений для подстановки.\n3. Измени значение name и проверь итоговый текст.\n4. Убедись, что имена заполнителей совпадают с ключами переданных значений."),
+            { it.trim() == "Привет, Оля! Город: Львов." }, walkthrough = "1. Template хранит маркеры вида \$name, а substitute() подставляет вместо них значения.\n2. Найди обозначения \$name и место, где передаётся словарь значений для подстановки.\n3. Измени значение name и проверь итоговый текст.\n4. Убедись, что имена заполнителей совпадают с ключами переданных значений."),
         Lesson("JSON: обмен данными", "Преобразуй словари в JSON и обратно",
             "Модуль json сериализует Python-объекты в текстовый формат JSON и восстанавливает их через loads(). Параметр ensure_ascii=False сохраняет кириллицу читаемой.",
             "import json\nprofile = {\"name\": \"Оля\", \"level\": 5}\nencoded = json.dumps(profile, ensure_ascii=False)\nprint(encoded)\ndecoded = json.loads(encoded)\nprint(decoded[\"level\"])",
