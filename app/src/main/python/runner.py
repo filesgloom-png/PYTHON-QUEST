@@ -6,9 +6,30 @@ import time
 import traceback
 
 
+class LimitedStringIO(io.StringIO):
+    """Capture output without allowing a snippet to allocate unbounded text."""
+
+    def __init__(self, limit=50_000):
+        super().__init__()
+        self.limit = limit
+        self.written = 0
+        self.truncated = False
+
+    def write(self, value):
+        remaining = self.limit - self.written
+        if remaining > 0:
+            chunk = value[:remaining]
+            super().write(chunk)
+            self.written += len(chunk)
+        if len(value) > remaining and not self.truncated:
+            super().write("\\n...[вывод обрезан: превышен лимит 50000 символов]...")
+            self.truncated = True
+        return len(value)
+
+
 def run_code(source, timeout_seconds=3.0):
-    """Execute a snippet while capturing output and limiting Python CPU time."""
-    output = io.StringIO()
+    """Execute a snippet with captured, size-limited output and a CPU time limit."""
+    output = LimitedStringIO()
     namespace = {"__name__": "__main__"}
     deadline = time.monotonic() + max(0.05, float(timeout_seconds))
     previous_trace = sys.gettrace()
