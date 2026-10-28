@@ -125,7 +125,7 @@ class LessonExampleTests(unittest.TestCase):
         cls.lessons = _extract_lessons(MAIN_ACTIVITY.read_text(encoding="utf-8"))
 
     def test_course_has_58_lessons(self):
-        self.assertEqual(len(self.lessons), 58)
+        self.assertEqual(len(self.lessons), 98)
 
     def test_every_starter_matches_its_example(self):
         for index, (title, example, starter, _expected) in enumerate(self.lessons, 1):
