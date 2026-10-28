@@ -963,12 +963,12 @@ class MainActivity : Activity() {
             hint = "Запиши важные мысли, вопросы или примеры…"
             setSingleLine(false)
         }
-        noteCountText = addText(lessonCard, "0 символов", 12f, muted, false)
+        noteCountText = addText(lessonCard, formatNoteCharacterCount(0), 12f, muted, false)
         notesEditor.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val note = s?.toString().orEmpty()
-                noteCountText.text = "${note.length} символов"
+                noteCountText.text = formatNoteCharacterCount(note.length)
                 if (lessonLoaded) {
                     getSharedPreferences("python_quest", MODE_PRIVATE).edit()
                         .putString("notes_$currentLesson", note)
@@ -1070,6 +1070,17 @@ class MainActivity : Activity() {
         addText(root, "Прогресс сохраняется на этом устройстве.", 12f, muted, false)
     }
 
+    private fun formatNoteCharacterCount(count: Int): String {
+        val lastTwoDigits = count % 100
+        val noun = when {
+            lastTwoDigits in 11..14 -> "символов"
+            count % 10 == 1 -> "символ"
+            count % 10 in 2..4 -> "символа"
+            else -> "символов"
+        }
+        return "$count $noun"
+    }
+
     private fun showLesson(index: Int) {
         if (lessonLoaded && currentLesson in lessons.indices) {
             getSharedPreferences("python_quest", MODE_PRIVATE).edit()
@@ -1083,7 +1094,7 @@ class MainActivity : Activity() {
         lessonText.text = lesson.explanation
         notesEditor.setText(getSharedPreferences("python_quest", MODE_PRIVATE)
             .getString("notes_$index", ""))
-        noteCountText.text = "${notesEditor.text.length} символов"
+        noteCountText.text = formatNoteCharacterCount(notesEditor.text.length)
         walkthroughText.text = if (lesson.walkthrough.isNotBlank()) lesson.walkthrough else
             "Как разобраться в примере:\n1. Запусти код без изменений и посмотри на результат.\n2. Найди в коде команду или конструкцию из объяснения выше.\n3. Измени одно значение, запусти код ещё раз и сравни результат."
         example.text = lesson.example
