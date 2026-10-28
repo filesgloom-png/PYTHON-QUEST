@@ -107,7 +107,13 @@ class MainActivity : Activity() {
             "age = 20\nhas_ticket = True\nprint(age >= 18 and has_ticket)",
             "age = 20\nhas_ticket = True\nprint(age >= 18 and has_ticket)",
             "Создай age = 20 и has_ticket = True. Выведи age >= 18 and has_ticket.",
-            { it.trim() == "True" })
+            { it.trim() == "True" }),
+        Lesson("Операторы сравнения", "Сравнивай значения",
+            "Операторы сравнения возвращают True или False. Например, == проверяет равенство, != — неравенство, а >= означает «больше или равно».",
+            "score = 75\nprint(score >= 60)\nprint(score == 100)",
+            "score = 75\nprint(score >= 60)\nprint(score == 100)",
+            "Создай score = 75. Выведи результат сравнения score >= 60, затем score == 100.",
+            { it.trim() == "True\nFalse" })
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
