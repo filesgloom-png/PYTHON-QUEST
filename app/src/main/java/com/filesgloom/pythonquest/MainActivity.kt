@@ -41,6 +41,8 @@ class MainActivity : Activity() {
     private lateinit var stats: TextView
     private lateinit var progressText: TextView
     private lateinit var courseProgress: ProgressBar
+    private lateinit var levelProgress: ProgressBar
+    private lateinit var levelProgressText: TextView
     private lateinit var lessonButtons: LinearLayout
 
     private val lessons = listOf(
@@ -146,6 +148,16 @@ class MainActivity : Activity() {
         }
         hero.addView(courseProgress, params(top = 5, bottom = 2))
         progressText = addText(hero, "", 12f, muted, false)
+        addText(hero, "ПРОГРЕСС УРОВНЯ", 10f, green, true)
+        levelProgress = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
+            max = 100
+            progress = xp % 100
+            progressTintList = ColorStateList.valueOf(green)
+            progressBackgroundTintList = ColorStateList.valueOf(panelAlt)
+            minimumHeight = dp(8)
+        }
+        hero.addView(levelProgress, params(top = 2, bottom = 2))
+        levelProgressText = addText(hero, "", 12f, muted, false)
         root.addView(hero, params(top = 18, bottom = 16))
 
         addText(root, "ТВОИ УРОКИ", 13f, green, true)
@@ -239,7 +251,9 @@ class MainActivity : Activity() {
         val xpIntoLevel = xp % 100
         stats.text = "$xp XP   •   Уровень $level   •   Уроков пройдено: ${completed.size}/${lessons.size}"
         courseProgress.progress = completed.size
-        progressText.text = "Курс: ${completed.size * 100 / lessons.size}%   •   До уровня ${level + 1}: ${100 - xpIntoLevel} XP"
+        progressText.text = "Курс пройден на ${completed.size * 100 / lessons.size}%"
+        levelProgress.progress = xpIntoLevel
+        levelProgressText.text = "$xpIntoLevel / 100 XP до уровня ${level + 1}"
     }
 
     private fun runCode(check: Boolean) {
