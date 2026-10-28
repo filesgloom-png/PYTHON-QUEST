@@ -377,7 +377,13 @@ class MainActivity : Activity() {
             "import json\nprofile = {\"name\": \"Оля\", \"level\": 5}\nencoded = json.dumps(profile, ensure_ascii=False)\nprint(encoded)\ndecoded = json.loads(encoded)\nprint(decoded[\"level\"])",
             "import json\nprofile = {\"name\": \"Оля\", \"level\": 5}\nencoded = json.dumps(profile, ensure_ascii=False)\nprint(encoded)\ndecoded = json.loads(encoded)\nprint(decoded[\"level\"])",
             "Создай словарь profile с именем Оля и уровнем 5. Преобразуй его в JSON через dumps() с ensure_ascii=False, затем восстанови через loads() и выведи level.",
-            { it.trim() == "{\"name\": \"Оля\", \"level\": 5}\n5" })
+            { it.trim() == "{\"name\": \"Оля\", \"level\": 5}\n5" }),
+        Lesson("Дата и время datetime", "Разбирай и форматируй даты",
+            "Модуль datetime позволяет разбирать дату из строки через strptime() и форматировать её через strftime(). Формат %d.%m.%Y означает день, месяц и четырёхзначный год.",
+            "from datetime import datetime\nmoment = datetime.strptime(\"28.10.2026\", \"%d.%m.%Y\")\nprint(moment.strftime(\"%Y-%m-%d\"))\nprint(moment.year)",
+            "from datetime import datetime\nmoment = datetime.strptime(\"28.10.2026\", \"%d.%m.%Y\")\nprint(moment.strftime(\"%Y-%m-%d\"))\nprint(moment.year)",
+            "Разбери строку 28.10.2026 через datetime.strptime(), выведи дату в формате ГГГГ-ММ-ДД и отдельно год.",
+            { it.trim() == "2026-10-28\n2026" })
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
