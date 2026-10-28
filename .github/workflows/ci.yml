@@ -33,6 +33,9 @@ jobs:
       - name: Validate Python runner
         run: python -m py_compile app/src/main/python/runner.py
 
+      - name: Run Python runner regression tests
+        run: python -m unittest discover -s tests -v
+
       - name: Build debug APK
         run: gradle --no-daemon assembleDebug --stacktrace
 
