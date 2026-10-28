@@ -29,6 +29,12 @@ class RunCodeTests(unittest.TestCase):
         self.assertFalse(result["ok"])
         self.assertIn("ZeroDivisionError", result["output"])
 
+    def test_caps_large_output(self):
+        result = runner.run_code('print("x" * 60000)')
+        self.assertTrue(result["ok"])
+        self.assertIn("вывод обрезан", result["output"])
+        self.assertLess(len(result["output"]), 51000)
+
     def test_stops_infinite_loops(self):
         result = runner.run_code("while True:\n    pass", timeout_seconds=0.15)
         self.assertFalse(result["ok"])
