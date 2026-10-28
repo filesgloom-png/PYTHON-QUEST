@@ -19,7 +19,8 @@ import com.chaquo.python.Python
 private data class Lesson(
     val title: String, val subtitle: String, val explanation: String,
     val example: String, val starter: String, val hint: String,
-    val expected: (String) -> Boolean
+    val expected: (String) -> Boolean,
+    val walkthrough: String = ""
 )
 
 class MainActivity : Activity() {
@@ -37,6 +38,7 @@ class MainActivity : Activity() {
     private lateinit var output: TextView
     private lateinit var lessonTitle: TextView
     private lateinit var lessonText: TextView
+    private lateinit var walkthroughText: TextView
     private lateinit var example: TextView
     private lateinit var stats: TextView
     private lateinit var progressText: TextView
@@ -50,58 +52,58 @@ class MainActivity : Activity() {
             "Функция print() выводит информацию на экран. Текст заключай в кавычки.",
             "print(\"Привет, мир!\")", "print(\"Привет, мир!\")",
             "Напиши print(\"Привет, мир!\") — сохрани скобки и кавычки.",
-            { it.trim() == "Привет, мир!" }),
+            { it.trim() == "Привет, мир!" }, walkthrough = "1. print — команда для вывода информации.\n2. Круглые скобки содержат то, что нужно вывести.\n3. Кавычки показывают, что Привет, мир! — это текст, а не имя переменной.\n4. При запуске программа выводит эту фразу без кавычек."),
         Lesson("Переменные", "Сохраняй данные",
             "Переменная хранит значение. Текст записывают в кавычках, число — без кавычек.",
             "city = \"Теплодар\"\nyear = 2026\nprint(city)\nprint(year)",
             "city = \"Теплодар\"\nyear = 2026\nprint(city)\nprint(year)",
             "Создай переменные city и year, затем выведи обе через print().",
-            { it.contains("Теплодар") && it.contains("2026") }),
+            { it.contains("Теплодар") && it.contains("2026") }, walkthrough = "1. city — имя переменной, а Теплодар — сохранённый в ней текст.\n2. year хранит число 2026; число записывают без кавычек.\n3. Знак = присваивает значение переменной.\n4. Каждый print() выводит значение своей переменной на отдельной строке."),
         Lesson("Математика", "Вычисляй с Python",
             "Python умеет складывать, вычитать, умножать и делить. Выражение можно передать в print().",
             "print(7 + 3)", "print(7 + 3)", "Используй print(7 + 3). Результат должен быть 10.",
-            { it.trim() == "10" }),
+            { it.trim() == "10" }, walkthrough = "1. Внутри print() записано математическое выражение 7 + 3.\n2. Python сначала вычисляет выражение.\n3. Получившееся число 10 передаётся в print().\n4. Поэтому в результате выводится 10, а не текст 7 + 3."),
         Lesson("Условия if", "Принимай решения",
             "if выполняет код, когда условие истинно. После условия поставь двоеточие, тело сдвинь на четыре пробела.",
             "age = 18\nif age >= 18:\n    print(\"Можно\")",
             "age = 18\nif age >= 18:\n    print(\"Можно\")",
             "Проверь age >= 18 и выведи слово Можно внутри блока if.",
-            { it.trim() == "Можно" }),
+            { it.trim() == "Можно" }, walkthrough = "1. Переменная age хранит число 18.\n2. Условие age >= 18 проверяет, больше ли возраст или равен 18.\n3. Двоеточие после условия начинает блок команд.\n4. Строка print() с отступом выполняется только тогда, когда условие истинно."),
         Lesson("Цикл for", "Повторяй действия",
             "Цикл for повторяет действие для каждого значения. range(3) выдаёт числа 0, 1 и 2.",
             "for i in range(3):\n    print(i)", "for i in range(3):\n    print(i)",
             "Напиши for i in range(3): и внутри цикла print(i).",
-            { it.trim() == "0\n1\n2" }),
+            { it.trim() == "0\n1\n2" }, walkthrough = "1. for запускает цикл и по очереди присваивает значения переменной i.\n2. range(3) даёт числа 0, 1 и 2: верхняя граница 3 не включается.\n3. print(i) находится внутри цикла благодаря отступу.\n4. Поэтому каждое число выводится на отдельной строке."),
         Lesson("Строки", "Объединяй текст",
             "Строки — это текст в кавычках. Их можно соединять оператором +.",
             "name = \"Мир\"\nprint(\"Привет, \" + name + \"!\")",
             "name = \"Мир\"\nprint(\"Привет, \" + name + \"!\")",
             "Создай переменную name и выведи приветствие через оператор +.",
-            { it.trim() == "Привет, Мир!" }),
+            { it.trim() == "Привет, Мир!" }, walkthrough = "1. name хранит текст Мир.\n2. Оператор + соединяет строки слева направо.\n3. Первая строка содержит Привет, , а последняя — восклицательный знак.\n4. print() выводит объединённый текст: Привет, Мир!"),
         Lesson("Списки", "Храни наборы значений",
             "Список хранит несколько значений. Индексация начинается с нуля, а len() возвращает длину списка.",
             "fruits = [\"яблоко\", \"груша\"]\nprint(fruits[0])\nprint(len(fruits))",
             "fruits = [\"яблоко\", \"груша\"]\nprint(fruits[0])\nprint(len(fruits))",
             "Выведи первый элемент списка и количество элементов.",
-            { it.trim() == "яблоко\n2" }),
+            { it.trim() == "яблоко\n2" }, walkthrough = "1. Квадратные скобки создают список из двух элементов.\n2. Индексы начинаются с нуля, поэтому fruits[0] — это яблоко.\n3. len(fruits) считает количество элементов, а не сумму их индексов.\n4. Сначала выводится яблоко, затем число 2."),
         Lesson("Цикл while", "Повторяй пока условие верно",
             "while повторяет блок, пока условие истинно. Не забывай менять счётчик, иначе цикл может стать бесконечным.",
             "counter = 1\nwhile counter <= 3:\n    print(counter)\n    counter += 1",
             "counter = 1\nwhile counter <= 3:\n    print(counter)\n    counter += 1",
             "Выведи числа от 1 до 3 с помощью while и увеличивай counter на 1.",
-            { it.trim() == "1\n2\n3" }),
+            { it.trim() == "1\n2\n3" }, walkthrough = "1. counter начинается со значения 1.\n2. while проверяет условие counter <= 3 перед каждой итерацией.\n3. Сначала выводится counter, затем counter += 1 увеличивает его на единицу.\n4. Когда counter станет 4, условие станет ложным и цикл остановится."),
         Lesson("Функции", "Создавай свои команды",
             "Функция начинается с def. Она может принимать параметры и возвращать результат через return.",
             "def square(number):\n    return number * number\n\nprint(square(5))",
             "def square(number):\n    return number * number\n\nprint(square(5))",
             "Создай функцию square(number), которая возвращает число, умноженное на себя.",
-            { it.trim() == "25" }),
+            { it.trim() == "25" }, walkthrough = "1. def создаёт функцию с именем square и параметром number.\n2. При вызове square(5) параметр number получает значение 5.\n3. return number * number возвращает произведение 5 на 5.\n4. print() выводит возвращённое значение 25."),
         Lesson("Словари", "Храни данные по ключам",
             "Словарь хранит пары ключ-значение. Получай значение по ключу, например player[\"name\"].",
             "player = {\"name\": \"Алекс\", \"level\": 3}\nprint(player[\"name\"])\nprint(player[\"level\"])",
             "player = {\"name\": \"Алекс\", \"level\": 3}\nprint(player[\"name\"])\nprint(player[\"level\"])",
             "Создай словарь player с ключами name и level и выведи оба значения.",
-            { it.trim() == "Алекс\n3" }),
+            { it.trim() == "Алекс\n3" }, walkthrough = "1. Фигурные скобки создают словарь из пар ключ: значение.\n2. Ключи name и level — текстовые строки, поэтому они в кавычках.\n3. player[\"name\"] получает значение по ключу name, а player[\"level\"] — по ключу level.\n4. Значения выводятся в том порядке, в котором вызываются print()."),
         Lesson("Логические операторы", "Объединяй условия",
             "Оператор and требует, чтобы оба условия были истинны. Оператор or принимает хотя бы одно истинное условие, а not меняет True на False и наоборот.",
             "age = 20\nhas_ticket = True\nprint(age >= 18 and has_ticket)",
@@ -469,6 +471,11 @@ class MainActivity : Activity() {
         val lessonCard = card().apply { setPadding(dp(18), dp(18), dp(18), dp(18)) }
         lessonTitle = addText(lessonCard, "", 23f, white, true)
         lessonText = addText(lessonCard, "", 15f, muted, false)
+        addText(lessonCard, "РАЗБОР ПО ШАГАМ", 11f, green, true)
+        walkthroughText = addText(lessonCard, "", 14f, white, false).apply {
+            background = rounded(panelAlt, 10)
+            setPadding(dp(12), dp(12), dp(12), dp(12))
+        }
         addText(lessonCard, "ПРИМЕР", 11f, green, true)
         example = addText(lessonCard, "", 14f, green, false).apply {
             typeface = Typeface.MONOSPACE
@@ -527,6 +534,8 @@ class MainActivity : Activity() {
         val lesson = lessons[index]
         lessonTitle.text = "Урок ${index + 1}. ${lesson.title}"
         lessonText.text = lesson.explanation
+        walkthroughText.text = if (lesson.walkthrough.isNotBlank()) lesson.walkthrough else
+            "Как разобраться в примере:\n1. Запусти код без изменений и посмотри на результат.\n2. Найди в коде команду или конструкцию из объяснения выше.\n3. Измени одно значение, запусти код ещё раз и сравни результат."
         example.text = lesson.example
         editor.setText(lesson.starter)
         showOutput("Запусти пример или напиши собственный код.", false)
