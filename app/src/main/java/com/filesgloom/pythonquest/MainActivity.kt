@@ -113,7 +113,13 @@ class MainActivity : Activity() {
             "score = 75\nprint(score >= 60)\nprint(score == 100)",
             "score = 75\nprint(score >= 60)\nprint(score == 100)",
             "Создай score = 75. Выведи результат сравнения score >= 60, затем score == 100.",
-            { it.trim() == "True\nFalse" })
+            { it.trim() == "True\nFalse" }),
+        Lesson("Методы строк", "Изменяй текст командами",
+            "У строк есть полезные методы. upper() переводит буквы в верхний регистр, lower() — в нижний, а capitalize() делает первую букву заглавной.",
+            "word = \"python\"\nprint(word.upper())\nprint(word.capitalize())",
+            "word = \"python\"\nprint(word.upper())\nprint(word.capitalize())",
+            "Создай word = \"python\". Выведи word.upper(), а затем word.capitalize().",
+            { it.trim() == "PYTHON\nPython" })
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
