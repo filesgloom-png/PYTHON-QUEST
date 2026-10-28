@@ -9,6 +9,8 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
@@ -35,6 +37,7 @@ class MainActivity : Activity() {
     private val white = Color.rgb(240, 246, 240)
     private val muted = Color.rgb(163, 180, 167)
     private var currentLesson = 0
+    private var lessonLoaded = false
     private var xp = 0
     private val completed = mutableSetOf<Int>()
     private lateinit var root: LinearLayout
@@ -585,6 +588,17 @@ class MainActivity : Activity() {
             hint = "Напиши код здесь…"
             setSingleLine(false)
         }
+        editor.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (lessonLoaded) {
+                    getSharedPreferences("python_quest", MODE_PRIVATE).edit()
+                        .putString("code_$currentLesson", s?.toString().orEmpty())
+                        .apply()
+                }
+            }
+            override fun afterTextChanged(s: Editable?) = Unit
+        })
         lessonCard.addView(editor, params(top = 7, bottom = 12))
         val runButton = Button(this).apply {
             text = "▶  Запустить код"
@@ -648,6 +662,11 @@ class MainActivity : Activity() {
     }
 
     private fun showLesson(index: Int) {
+        if (lessonLoaded && currentLesson in lessons.indices) {
+            getSharedPreferences("python_quest", MODE_PRIVATE).edit()
+                .putString("code_$currentLesson", editor.text.toString())
+                .apply()
+        }
         currentLesson = index
         val lesson = lessons[index]
         lessonTitle.text = "Урок ${index + 1}. ${lesson.title}"
@@ -655,7 +674,10 @@ class MainActivity : Activity() {
         walkthroughText.text = if (lesson.walkthrough.isNotBlank()) lesson.walkthrough else
             "Как разобраться в примере:\n1. Запусти код без изменений и посмотри на результат.\n2. Найди в коде команду или конструкцию из объяснения выше.\n3. Измени одно значение, запусти код ещё раз и сравни результат."
         example.text = lesson.example
-        editor.setText(lesson.starter)
+        val savedCode = getSharedPreferences("python_quest", MODE_PRIVATE)
+            .getString("code_$index", null)
+        editor.setText(savedCode ?: lesson.starter)
+        lessonLoaded = true
         showOutput("Запусти пример или напиши собственный код.", false)
         lessonButtonsByIndex.forEachIndexed { lessonIndex, button ->
             button.background = rounded(if (lessonIndex == index) panelAlt else panel, 14)
