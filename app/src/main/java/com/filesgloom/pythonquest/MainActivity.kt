@@ -149,7 +149,13 @@ class MainActivity : Activity() {
             "numbers = {1, 2, 2, 3}\nprint(len(numbers))\npoint = (4, 5)\nprint(point[0])",
             "numbers = {1, 2, 2, 3}\nprint(len(numbers))\npoint = (4, 5)\nprint(point[0])",
             "Создай множество {1, 2, 2, 3} и выведи его длину. Затем создай кортеж (4, 5) и выведи первый элемент.",
-            { it.trim() == "3\n4" })
+            { it.trim() == "3\n4" }),
+        Lesson("Работа с файлами", "Читай и записывай текстовые данные",
+            "Функция open() открывает файл. Режим w записывает текст и создаёт файл, если его нет; режим r читает существующий файл. Конструкция with автоматически закрывает файл после работы.",
+            "with open(\\"notes.txt\\", \\"w\\", encoding=\\"utf-8\\") as file:\\n    file.write(\\"Привет!\\")\\nwith open(\\"notes.txt\\", \\"r\\", encoding=\\"utf-8\\") as file:\\n    print(file.read())",
+            "with open(\\"notes.txt\\", \\"w\\", encoding=\\"utf-8\\") as file:\\n    file.write(\\"Привет!\\")\\nwith open(\\"notes.txt\\", \\"r\\", encoding=\\"utf-8\\") as file:\\n    print(file.read())",
+            "Используй with open(\\"notes.txt\\", \\"w\\", encoding=\\"utf-8\\") для записи текста Привет!, затем открой файл в режиме r и выведи file.read().",
+            { it.trim() == "Привет!" })
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
