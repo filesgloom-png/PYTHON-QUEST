@@ -1127,6 +1127,8 @@ class MainActivity : Activity() {
                             .apply()
                     }
                     showLesson(currentLesson)
+                    updateLessonFilterButtons()
+                    filterLessons(lessonSearch.text.toString())
                     showOutput("Верно! ${if (firstCompletion) "+20 XP получено." else "Урок уже пройден."}\n\n$resultText", true)
                 } else {
                     showOutput("Пока не совпало с ожидаемым результатом. Проверь код и попробуй ещё раз.\n\nВывод:\n$resultText", false)
