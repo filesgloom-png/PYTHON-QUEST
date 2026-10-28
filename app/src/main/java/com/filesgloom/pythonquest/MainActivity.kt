@@ -366,7 +366,7 @@ class MainActivity : Activity() {
             "from enum import Enum\n\nclass Status(Enum):\n    READY = \"ready\"\n    BUSY = \"busy\"\n\nprint(Status.READY.value)\nprint(Status.BUSY.name)",
             "Создай Enum Status с READY = \"ready\" и BUSY = \"busy\", затем выведи value для READY и name для BUSY.",
             { it.trim() == "ready\nBUSY" }, walkthrough = "1. Enum описывает фиксированный набор вариантов; name — имя элемента перечисления, value — хранимое значение.\n2. Найди, где объявляются именованные варианты и как выбирается один из них.\n3. Добавь новый вариант и обратись к нему по имени.\n4. Отличи имя элемента перечисления от его значения."),
-        Lesson("Сжатие данных через zip()", "Объединяй связанные списки",
+        Lesson("Пары ключей и значений через zip()", "Сопоставляй элементы двух списков",
             "zip() объединяет элементы нескольких последовательностей по позициям. Полученные пары можно преобразовать в словарь, если первый список содержит ключи, а второй — значения.",
             "keys = [\"имя\", \"город\"]\nvalues = [\"Ира\", \"Одесса\"]\nprofile = dict(zip(keys, values))\nprint(profile[\"имя\"])\nprint(profile[\"город\"])",
             "keys = [\"имя\", \"город\"]\nvalues = [\"Ира\", \"Одесса\"]\nprofile = dict(zip(keys, values))\nprint(profile[\"имя\"])\nprint(profile[\"город\"])",
