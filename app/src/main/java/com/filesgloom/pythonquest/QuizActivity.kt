@@ -93,6 +93,7 @@ class QuizActivity : Activity() {
     )
 
     private lateinit var root: LinearLayout
+    private lateinit var intro: TextView
     private lateinit var progress: ProgressBar
     private lateinit var count: TextView
     private lateinit var prompt: TextView
@@ -126,7 +127,7 @@ class QuizActivity : Activity() {
         setContentView(scroll)
         addText(root, "PYTHON QUEST  ·  ПРАКТИКА", 12f, green, true)
         addText(root, "Контроль знаний", 27f, white, true)
-        addText(root, "Вопросы по всем 8 разделам. Сначала выбери ответ самостоятельно — затем увидишь объяснение.", 14f, muted, false)
+        intro = addText(root, "", 14f, muted, false)
         progress = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
             max = questions.size
             progressTintList = android.content.res.ColorStateList.valueOf(green)
@@ -155,7 +156,12 @@ class QuizActivity : Activity() {
         root.addView(nextButton, params(4, 5))
         val back = makeButton("Вернуться к урокам", panelAlt) { finish() }
         root.addView(back, params(4, 0))
+        updateIntro()
         showQuestion()
+    }
+
+    private fun updateIntro() {
+        intro.text = "Вопросы по 16 разделам. Лучший результат: $score из ${questions.size}. Сначала выбери ответ самостоятельно — затем увидишь объяснение."
     }
 
     private fun showQuestion() {
@@ -213,6 +219,7 @@ class QuizActivity : Activity() {
             feedback.text = "Пока неверно. Попробуй ещё раз в следующем прохождении.\n\nОбъяснение: ${q.explanation}"
         }
         score = maxOf(score, correctCount)
+        updateIntro()
         getSharedPreferences("python_quest", MODE_PRIVATE).edit()
             .putStringSet("quiz_answered_ids", answeredIds.map { it.toString() }.toSet())
             .putInt("quiz_best_score", score)
