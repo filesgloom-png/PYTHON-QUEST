@@ -101,7 +101,13 @@ class MainActivity : Activity() {
             "player = {\"name\": \"Алекс\", \"level\": 3}\nprint(player[\"name\"])\nprint(player[\"level\"])",
             "player = {\"name\": \"Алекс\", \"level\": 3}\nprint(player[\"name\"])\nprint(player[\"level\"])",
             "Создай словарь player с ключами name и level и выведи оба значения.",
-            { it.trim() == "Алекс\n3" })
+            { it.trim() == "Алекс\n3" }),
+        Lesson("Логические операторы", "Объединяй условия",
+            "Оператор and требует, чтобы оба условия были истинны. Оператор or принимает хотя бы одно истинное условие, а not меняет True на False и наоборот.",
+            "age = 20\nhas_ticket = True\nprint(age >= 18 and has_ticket)",
+            "age = 20\nhas_ticket = True\nprint(age >= 18 and has_ticket)",
+            "Создай age = 20 и has_ticket = True. Выведи age >= 18 and has_ticket.",
+            { it.trim() == "True" })
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
