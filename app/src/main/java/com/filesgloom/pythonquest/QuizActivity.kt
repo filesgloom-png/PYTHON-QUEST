@@ -189,7 +189,8 @@ class QuizActivity : Activity() {
                 .putInt("quiz_best_score", maxOf(score, correctCount))
                 .apply()
         }
-        optionsBox.children().forEachIndexed { optionIndex, view ->
+        for (optionIndex in 0 until optionsBox.childCount) {
+            val view = optionsBox.getChildAt(optionIndex)
             if (view is Button) {
                 view.isEnabled = false
                 if (optionIndex == q.answer) view.background = rounded(Color.rgb(35, 83, 48), 12)
