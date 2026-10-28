@@ -170,6 +170,7 @@ class QuizActivity : Activity() {
             if (firstReward) {
                 val prefs = getSharedPreferences("python_quest", MODE_PRIVATE)
                 val newXp = prefs.getInt("xp", 0) + 10
+                score = maxOf(score, correctCount)
                 prefs.edit()
                     .putInt("xp", newXp)
                     .putStringSet("quiz_xp_awarded_ids", earnedIds.map { it.toString() }.toSet())
@@ -190,6 +191,7 @@ class QuizActivity : Activity() {
                 .putStringSet("quiz_answered_ids", answeredIds.map { it.toString() }.toSet())
                 .putInt("quiz_best_score", maxOf(score, correctCount))
                 .apply()
+            score = maxOf(score, correctCount)
         }
         for (optionIndex in 0 until optionsBox.childCount) {
             val view = optionsBox.getChildAt(optionIndex)
