@@ -1,0 +1,13 @@
+{
+  "name": "PYTHON QUEST — изучай Python",
+  "short_name": "Python Quest",
+  "description": "Игровое обучение Python на русском языке",
+  "lang": "ru",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b100d",
+  "theme_color": "#101812",
+  "icons": []
+}
