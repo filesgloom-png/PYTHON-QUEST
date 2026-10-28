@@ -137,7 +137,13 @@ class MainActivity : Activity() {
             "try:\n    number = int(\"abc\")\nexcept ValueError:\n    print(\"Это не число\")",
             "try:\n    number = int(\"abc\")\nexcept ValueError:\n    print(\"Это не число\")",
             "Внутри try попробуй преобразовать строку \"abc\" в int, а в except ValueError выведи Это не число.",
-            { it.trim() == "Это не число" })
+            { it.trim() == "Это не число" }),
+        Lesson("Модули и import", "Используй готовые инструменты Python",
+            "Модуль — это файл с готовыми функциями и данными. Команда import подключает модуль, после чего можно обращаться к его функциям через точку. Например, math.sqrt() вычисляет квадратный корень.",
+            "import math\nprint(math.sqrt(16))",
+            "import math\nprint(math.sqrt(16))",
+            "Подключи модуль math и выведи квадратный корень из 16 с помощью math.sqrt(16).",
+            { it.trim() == "4.0" })
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
