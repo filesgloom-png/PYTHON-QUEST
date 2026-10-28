@@ -46,3 +46,14 @@ jobs:
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
+
+      - name: Build release APK (unsigned until a release key is configured)
+        run: gradle --no-daemon assembleRelease --stacktrace
+
+      - name: Upload unsigned release APK for validation
+        uses: actions/upload-artifact@v4
+        with:
+          name: PYTHON-QUEST-release-unsigned
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          if-no-files-found: error
+          retention-days: 14
