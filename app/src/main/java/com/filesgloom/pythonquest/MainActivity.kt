@@ -427,6 +427,29 @@ class MainActivity : Activity() {
         showLesson(0)
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (!::stats.isInitialized) return
+
+        val prefs = getSharedPreferences("python_quest", MODE_PRIVATE)
+        xp = prefs.getInt("xp", xp)
+        completed.clear()
+        for (i in lessons.indices) {
+            if (prefs.getBoolean("done_$i", false)) completed.add(i)
+        }
+
+        val level = 1 + xp / 100
+        val xpIntoLevel = xp % 100
+        stats.text = "$xp XP   •   Уровень $level   •   Уроков пройдено: ${completed.size}/${lessons.size}"
+        courseProgress.progress = completed.size
+        progressText.text = "Курс пройден на ${completed.size * 100 / lessons.size}%"
+        levelProgress.progress = xpIntoLevel
+        levelProgressText.text = "$xpIntoLevel / 100 XP до уровня ${level + 1}"
+        lessonButtonsByIndex.forEachIndexed { index, button ->
+            button.text = "${if (completed.contains(index)) "✓" else (index + 1).toString()}.  ${lessons[index].title}\n      ${lessons[index].subtitle}"
+        }
+    }
+
     private fun buildUi() {
         val scroll = ScrollView(this).apply { setBackgroundColor(bg); clipToPadding = false }
         root = LinearLayout(this).apply {
