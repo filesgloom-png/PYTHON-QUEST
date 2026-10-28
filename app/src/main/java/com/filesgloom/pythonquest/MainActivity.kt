@@ -53,6 +53,9 @@ class MainActivity : Activity() {
     private lateinit var levelProgress: ProgressBar
     private lateinit var levelProgressText: TextView
     private lateinit var lessonButtons: LinearLayout
+    private lateinit var continueButton: Button
+    private lateinit var courseScroll: ScrollView
+    private lateinit var lessonCard: LinearLayout
     private val lessonButtonsByIndex = mutableListOf<Button>()
 
     private data class CourseSection(
@@ -723,19 +726,20 @@ class MainActivity : Activity() {
         progressText.text = "Курс пройден на ${completed.size * 100 / lessons.size}%"
         levelProgress.progress = xpIntoLevel
         levelProgressText.text = "$xpIntoLevel / 100 XP до уровня ${level + 1}"
+        updateContinueButton()
         lessonButtonsByIndex.forEachIndexed { index, button ->
             button.text = "${if (completed.contains(index)) "✓" else (index + 1).toString()}.  ${lessons[index].title}\n      ${lessons[index].subtitle}"
         }
     }
 
     private fun buildUi() {
-        val scroll = ScrollView(this).apply { setBackgroundColor(bg); clipToPadding = false }
+        courseScroll = ScrollView(this).apply { setBackgroundColor(bg); clipToPadding = false }
         root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(18), dp(18), dp(18), dp(30))
         }
-        scroll.addView(root)
-        setContentView(scroll)
+        courseScroll.addView(root)
+        setContentView(courseScroll)
 
         val header = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         val logo = text("Py", 22f, Color.rgb(8, 33, 15), true).apply {
@@ -781,7 +785,24 @@ class MainActivity : Activity() {
             background = rounded(green, 12)
             setOnClickListener { startActivity(Intent(this@MainActivity, QuizActivity::class.java)) }
         }
-        root.addView(quizButton, params(top = 0, bottom = 16))
+        root.addView(quizButton, params(top = 0, bottom = 8))
+
+        continueButton = Button(this).apply {
+            text = "▶ Продолжить обучение"
+            textSize = 15f
+            isAllCaps = false
+            setTextColor(Color.rgb(8, 33, 15))
+            background = rounded(green, 12)
+            setOnClickListener {
+                val nextLesson = lessons.indices.firstOrNull { it !in completed } ?: 0
+                if (completed.size == lessons.size) {
+                    Toast.makeText(this@MainActivity, "Курс пройден. Начинаем повторение.", Toast.LENGTH_SHORT).show()
+                }
+                showLesson(nextLesson)
+                courseScroll.post { courseScroll.smoothScrollTo(0, lessonCard.top) }
+            }
+        }
+        root.addView(continueButton, params(top = 0, bottom = 18))
 
         addText(root, "ТВОИ УРОКИ", 13f, green, true)
         lessonButtons = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
@@ -833,7 +854,7 @@ class MainActivity : Activity() {
             }
         }
 
-        val lessonCard = card().apply { setPadding(dp(18), dp(18), dp(18), dp(18)) }
+        lessonCard = card().apply { setPadding(dp(18), dp(18), dp(18), dp(18)) }
         lessonTitle = addText(lessonCard, "", 23f, white, true)
         lessonText = addText(lessonCard, "", 15f, muted, false)
         addText(lessonCard, "РАЗБОР ПО ШАГАМ", 11f, green, true)
@@ -962,6 +983,16 @@ class MainActivity : Activity() {
         progressText.text = "Курс пройден на ${completed.size * 100 / lessons.size}%"
         levelProgress.progress = xpIntoLevel
         levelProgressText.text = "$xpIntoLevel / 100 XP до уровня ${level + 1}"
+        updateContinueButton()
+    }
+
+    private fun updateContinueButton() {
+        val nextLesson = lessons.indices.firstOrNull { it !in completed }
+        continueButton.text = if (nextLesson == null) {
+            "✓ Курс пройден · повторить с начала"
+        } else {
+            "▶ Продолжить обучение · урок ${nextLesson + 1}"
+        }
     }
 
     private fun runCode(check: Boolean) {
