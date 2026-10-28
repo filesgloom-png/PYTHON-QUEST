@@ -41,6 +41,8 @@ class MainActivity : Activity() {
     private var lessonLoaded = false
     private var xp = 0
     private val completed = mutableSetOf<Int>()
+    private var lessonFilter = 0
+    private val lessonFilterButtons = mutableListOf<Button>()
     private lateinit var root: LinearLayout
     private lateinit var editor: EditText
     private lateinit var output: TextView
@@ -734,6 +736,8 @@ class MainActivity : Activity() {
         lessonButtonsByIndex.forEachIndexed { index, button ->
             button.text = "${if (completed.contains(index)) "✓" else (index + 1).toString()}.  ${lessons[index].title}\n      ${lessons[index].subtitle}"
         }
+        updateLessonFilterButtons()
+        filterLessons(lessonSearch.text.toString())
     }
 
     private fun buildUi() {
@@ -826,6 +830,30 @@ class MainActivity : Activity() {
             }
             override fun afterTextChanged(s: Editable?) = Unit
         })
+        val filterRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        lessonFilterButtons.clear()
+        listOf("Все", "Не пройдены", "Пройдены").forEachIndexed { filterIndex, label ->
+            val filterButton = Button(this).apply {
+                text = label
+                textSize = 11f
+                isAllCaps = false
+                setPadding(dp(2), 0, dp(2), 0)
+                setOnClickListener {
+                    lessonFilter = filterIndex
+                    updateLessonFilterButtons()
+                    filterLessons(lessonSearch.text.toString())
+                }
+            }
+            lessonFilterButtons.add(filterButton)
+            filterRow.addView(filterButton, LinearLayout.LayoutParams(0, dp(44), 1f).apply {
+                marginEnd = dp(4)
+            })
+        }
+        root.addView(filterRow, params(top = 2, bottom = 3))
+        updateLessonFilterButtons()
         lessonButtons = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         root.addView(lessonButtons, params(top = 4, bottom = 8))
         searchEmptyState = text("Ничего не найдено. Попробуй другое слово.", 13f, muted, false).apply {
@@ -1020,27 +1048,50 @@ class MainActivity : Activity() {
         updateContinueButton()
     }
 
+    private fun updateLessonFilterButtons() {
+        lessonFilterButtons.forEachIndexed { index, button ->
+            val selected = index == lessonFilter
+            button.background = rounded(if (selected) green else panelAlt, 10)
+            button.setTextColor(if (selected) Color.rgb(8, 33, 15) else white)
+        }
+    }
+
     private fun filterLessons(query: String) {
         val normalized = query.trim().lowercase()
-        var visibleCount = 0
-        lessonButtonsByIndex.forEachIndexed { index, button ->
+        fun matchesLesson(index: Int): Boolean {
             val lesson = lessons[index]
-            val matches = normalized.isEmpty() ||
+            val matchesQuery = normalized.isEmpty() ||
                 lesson.title.lowercase().contains(normalized) ||
                 lesson.subtitle.lowercase().contains(normalized)
+            val matchesStatus = when (lessonFilter) {
+                1 -> index !in completed
+                2 -> index in completed
+                else -> true
+            }
+            return matchesQuery && matchesStatus
+        }
+
+        var visibleCount = 0
+        lessonButtonsByIndex.forEachIndexed { index, button ->
+            val matches = matchesLesson(index)
             button.visibility = if (matches) View.VISIBLE else View.GONE
             if (matches) visibleCount++
         }
         courseSections.forEach { section ->
             val hasMatch = lessons.indices.any { index ->
-                index in section.start..section.end &&
-                    (normalized.isEmpty() ||
-                        lessons[index].title.lowercase().contains(normalized) ||
-                        lessons[index].subtitle.lowercase().contains(normalized))
+                index in section.start..section.end && matchesLesson(index)
             }
             sectionDecorations[section.start]?.forEach { decoration ->
-                decoration.visibility = if (normalized.isEmpty() || hasMatch) View.VISIBLE else View.GONE
+                decoration.visibility = if (hasMatch) View.VISIBLE else View.GONE
             }
+        }
+        searchEmptyState.text = when {
+            visibleCount > 0 -> ""
+            normalized.isNotEmpty() && lessonFilter != 0 -> "Нет уроков по запросу в выбранном фильтре."
+            normalized.isNotEmpty() -> "Ничего не найдено. Попробуй другое слово."
+            lessonFilter == 1 -> "Все уроки уже пройдены."
+            lessonFilter == 2 -> "Пока нет пройденных уроков."
+            else -> "Ничего не найдено. Попробуй другое слово."
         }
         searchEmptyState.visibility = if (visibleCount == 0) View.VISIBLE else View.GONE
     }
@@ -1076,6 +1127,8 @@ class MainActivity : Activity() {
                             .apply()
                     }
                     showLesson(currentLesson)
+                    updateLessonFilterButtons()
+                    filterLessons(lessonSearch.text.toString())
                     showOutput("Верно! ${if (firstCompletion) "+20 XP получено." else "Урок уже пройден."}\n\n$resultText", true)
                 } else {
                     showOutput("Пока не совпало с ожидаемым результатом. Проверь код и попробуй ещё раз.\n\nВывод:\n$resultText", false)
