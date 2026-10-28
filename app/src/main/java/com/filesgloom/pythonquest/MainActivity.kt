@@ -476,13 +476,13 @@ class MainActivity : Activity() {
         root.addView(lessonButtons, params(top = 8, bottom = 18))
         lessonButtonsByIndex.clear()
         lessons.forEachIndexed { index, lesson ->
-            val section = courseSections.firstOrNull { it.start == index }
-            if (section != null) {
-                val heading = text(section.title, 12f, green, true).apply {
+            val startingSection = courseSections.firstOrNull { it.start == index }
+            if (startingSection != null) {
+                val heading = text(startingSection.title, 12f, green, true).apply {
                     setPadding(dp(4), dp(12), dp(4), dp(3))
                 }
                 lessonButtons.addView(heading, params(top = 5, bottom = 2))
-                addText(lessonButtons, section.description, 13f, muted, false)
+                addText(lessonButtons, startingSection.description, 13f, muted, false)
             }
 
             val button = Button(this).apply {
@@ -499,14 +499,15 @@ class MainActivity : Activity() {
             lessonButtonsByIndex.add(button)
             lessonButtons.addView(button, params(bottom = 7))
 
-            if (section != null && section.end == index) {
+            val endingSection = courseSections.firstOrNull { it.end == index }
+            if (endingSection != null) {
                 val checkpointCard = LinearLayout(this).apply {
                     orientation = LinearLayout.VERTICAL
                     background = rounded(panelAlt, 12)
                     setPadding(dp(12), dp(10), dp(12), dp(10))
                 }
                 addText(checkpointCard, "КОНТРОЛЬНАЯ ТОЧКА", 11f, green, true)
-                addText(checkpointCard, section.checkpoint, 13f, white, false)
+                addText(checkpointCard, endingSection.checkpoint, 13f, white, false)
                 val repeatButton = Button(this).apply {
                     text = "Повторить урок ${index + 1}"
                     textSize = 12f
