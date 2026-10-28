@@ -383,7 +383,13 @@ class MainActivity : Activity() {
             "from datetime import datetime\nmoment = datetime.strptime(\"28.10.2026\", \"%d.%m.%Y\")\nprint(moment.strftime(\"%Y-%m-%d\"))\nprint(moment.year)",
             "from datetime import datetime\nmoment = datetime.strptime(\"28.10.2026\", \"%d.%m.%Y\")\nprint(moment.strftime(\"%Y-%m-%d\"))\nprint(moment.year)",
             "Разбери строку 28.10.2026 через datetime.strptime(), выведи дату в формате ГГГГ-ММ-ДД и отдельно год.",
-            { it.trim() == "2026-10-28\n2026" })
+            { it.trim() == "2026-10-28\n2026" }),
+        Lesson("CSV: таблицы и данные", "Читай строки CSV через csv.reader",
+            "Модуль csv помогает обрабатывать табличные данные в формате CSV. reader() читает строки, а newline=\"\" при открытии файла помогает избежать лишних пустых строк при работе с CSV.",
+            "import csv\nfrom io import StringIO\nsource = StringIO(\"name,score\\nОля,95\\nИван,88\\n\")\nrows = list(csv.reader(source))\nprint(rows[0])\nprint(rows[1][0], rows[1][1])",
+            "import csv\nfrom io import StringIO\nsource = StringIO(\"name,score\\nОля,95\\nИван,88\\n\")\nrows = list(csv.reader(source))\nprint(rows[0])\nprint(rows[1][0], rows[1][1])",
+            "Используй csv.reader() для чтения CSV-текста с заголовком name,score и строками Оля,95 и Иван,88. Выведи заголовок, затем имя и балл первой записи.",
+            { it.trim() == "['name', 'score']\nОля 95" })
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
