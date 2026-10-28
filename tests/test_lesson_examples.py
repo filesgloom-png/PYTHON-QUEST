@@ -81,7 +81,7 @@ def _decode_kotlin_string(token):
 
 def _extract_lessons(source):
     list_start = source.index("private val lessons = listOf(")
-    list_end = source.index("\\n    )\\n\\n    override fun onCreate", list_start)
+    list_end = source.index("\n    )\n\n    override fun onCreate", list_start)
     cursor = list_start
     lessons = []
     while True:
