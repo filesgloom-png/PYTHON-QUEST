@@ -46,6 +46,27 @@ class MainActivity : Activity() {
     private lateinit var levelProgress: ProgressBar
     private lateinit var levelProgressText: TextView
     private lateinit var lessonButtons: LinearLayout
+    private val lessonButtonsByIndex = mutableListOf<Button>()
+
+    private data class CourseSection(
+        val start: Int,
+        val end: Int,
+        val title: String,
+        val description: String,
+        val checkpoint: String
+    )
+
+    // Диапазоны нумеруются с нуля и не меняют индексы самих уроков.
+    private val courseSections = listOf(
+        CourseSection(0, 4, "РАЗДЕЛ 1 · ПЕРВЫЕ ШАГИ", "Познакомься с командами, переменными, вычислениями и условиями.", "Объясни своими словами, что делает print(), как хранится значение в переменной и когда срабатывает if."),
+        CourseSection(5, 9, "РАЗДЕЛ 2 · ДАННЫЕ И ЦИКЛЫ", "Работай с текстом, списками, циклами, функциями и словарями.", "Измени данные в примере и предскажи вывод до запуска. Проверь, как список и словарь хранят разные данные."),
+        CourseSection(10, 15, "РАЗДЕЛ 3 · УВЕРЕННЫЙ PYTHON", "Сравнения, методы, форматирование и первые способы разбирать ошибки.", "Самостоятельно собери короткую программу с условием, строкой и списком. Если появится ошибка, прочитай объяснение и исправь её."),
+        CourseSection(16, 24, "РАЗДЕЛ 4 · ИНСТРУМЕНТЫ РАБОТЫ С ДАННЫМИ", "Импортируй модули, работай с файлами и коллекциями, сортируй и преобразуй данные.", "Возьми коллекцию значений, преобразуй её, отсортируй и объясни, зачем нужен каждый шаг."),
+        CourseSection(25, 29, "РАЗДЕЛ 5 · МИНИ-ПРОЕКТЫ", "Закрепи основы на небольших программах с понятной целью.", "Перед запуском опиши шаги решения. Затем проверь крайний случай: пустой ввод, ноль или неожиданное значение."),
+        CourseSection(30, 38, "РАЗДЕЛ 6 · КЛАССЫ И ГИБКИЕ ФУНКЦИИ", "Изучи объекты, наследование, рекурсию и дополнительные параметры функций.", "Объясни, какие данные хранит объект и чем вызов функции отличается от её определения."),
+        CourseSection(39, 44, "РАЗДЕЛ 7 · АНАЛИЗ И СТРУКТУРИРОВАНИЕ", "Подсчитывай значения, проверяй условия и используй полезные инструменты стандартной библиотеки.", "Выбери подходящий инструмент для набора чисел и обоснуй выбор: подсчёт, проверка условий или статистика."),
+        CourseSection(45, 57, "РАЗДЕЛ 8 · ФАЙЛЫ, ФОРМАТЫ И АЛГОРИТМЫ", "Освой регулярные выражения, пути, форматы обмена данными и алгоритмические инструменты.", "Разбери входные данные, выбери подходящую структуру или алгоритм и проверь результат на небольшом примере.")
+    )
 
     private val lessons = listOf(
         Lesson("Первая программа", "Выведи текст на экран",
@@ -453,7 +474,17 @@ class MainActivity : Activity() {
         addText(root, "ТВОИ УРОКИ", 13f, green, true)
         lessonButtons = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         root.addView(lessonButtons, params(top = 8, bottom = 18))
+        lessonButtonsByIndex.clear()
         lessons.forEachIndexed { index, lesson ->
+            val section = courseSections.firstOrNull { it.start == index }
+            if (section != null) {
+                val heading = text(section.title, 12f, green, true).apply {
+                    setPadding(dp(4), dp(12), dp(4), dp(3))
+                }
+                lessonButtons.addView(heading, params(top = 5, bottom = 2))
+                addText(lessonButtons, section.description, 13f, muted, false)
+            }
+
             val button = Button(this).apply {
                 text = "${index + 1}.  ${lesson.title}\n      ${lesson.subtitle}"
                 textSize = 14f
@@ -465,7 +496,28 @@ class MainActivity : Activity() {
                 minHeight = dp(62)
                 setOnClickListener { showLesson(index) }
             }
+            lessonButtonsByIndex.add(button)
             lessonButtons.addView(button, params(bottom = 7))
+
+            if (section != null && section.end == index) {
+                val checkpointCard = LinearLayout(this).apply {
+                    orientation = LinearLayout.VERTICAL
+                    background = rounded(panelAlt, 12)
+                    setPadding(dp(12), dp(10), dp(12), dp(10))
+                }
+                addText(checkpointCard, "КОНТРОЛЬНАЯ ТОЧКА", 11f, green, true)
+                addText(checkpointCard, section.checkpoint, 13f, white, false)
+                val repeatButton = Button(this).apply {
+                    text = "Повторить урок ${index + 1}"
+                    textSize = 12f
+                    isAllCaps = false
+                    setTextColor(white)
+                    background = rounded(panel, 10)
+                    setOnClickListener { showLesson(index) }
+                }
+                checkpointCard.addView(repeatButton, params(top = 3))
+                lessonButtons.addView(checkpointCard, params(top = 5, bottom = 12))
+            }
         }
 
         val lessonCard = card().apply { setPadding(dp(18), dp(18), dp(18), dp(18)) }
@@ -539,10 +591,9 @@ class MainActivity : Activity() {
         example.text = lesson.example
         editor.setText(lesson.starter)
         showOutput("Запусти пример или напиши собственный код.", false)
-        for (i in 0 until lessonButtons.childCount) {
-            val button = lessonButtons.getChildAt(i) as Button
-            button.background = rounded(if (i == index) panelAlt else panel, 14)
-            button.text = "${if (completed.contains(i)) "✓" else (i + 1).toString()}.  ${lessons[i].title}\n      ${lessons[i].subtitle}"
+        lessonButtonsByIndex.forEachIndexed { lessonIndex, button ->
+            button.background = rounded(if (lessonIndex == index) panelAlt else panel, 14)
+            button.text = "${if (completed.contains(lessonIndex)) "✓" else (lessonIndex + 1).toString()}.  ${lessons[lessonIndex].title}\n      ${lessons[lessonIndex].subtitle}"
         }
         val level = 1 + xp / 100
         val xpIntoLevel = xp % 100
