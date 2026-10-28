@@ -51,6 +51,7 @@ class MainActivity : Activity() {
     private lateinit var favoriteButton: Button
     private lateinit var lessonText: TextView
     private lateinit var walkthroughText: TextView
+    private lateinit var notesEditor: EditText
     private lateinit var example: TextView
     private lateinit var stats: TextView
     private lateinit var progressText: TextView
@@ -948,6 +949,31 @@ class MainActivity : Activity() {
             background = rounded(panelAlt, 10)
             setPadding(dp(12), dp(12), dp(12), dp(12))
         }
+        addText(lessonCard, "МОИ ЗАМЕТКИ К УРОКУ", 11f, green, true)
+        notesEditor = EditText(this).apply {
+            setTextColor(white)
+            setHintTextColor(muted)
+            textSize = 14f
+            gravity = Gravity.TOP or Gravity.START
+            setPadding(dp(12), dp(12), dp(12), dp(12))
+            minLines = 3
+            maxLines = 8
+            background = rounded(Color.rgb(7, 12, 8), 10)
+            hint = "Запиши важные мысли, вопросы или примеры…"
+            setSingleLine(false)
+        }
+        notesEditor.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (lessonLoaded) {
+                    getSharedPreferences("python_quest", MODE_PRIVATE).edit()
+                        .putString("notes_$currentLesson", s?.toString().orEmpty())
+                        .apply()
+                }
+            }
+            override fun afterTextChanged(s: Editable?) = Unit
+        })
+        lessonCard.addView(notesEditor, params(top = 4, bottom = 12))
         addText(lessonCard, "ПРИМЕР", 11f, green, true)
         example = addText(lessonCard, "", 14f, green, false).apply {
             typeface = Typeface.MONOSPACE
@@ -1051,6 +1077,8 @@ class MainActivity : Activity() {
         lessonTitle.text = "Урок ${index + 1}. ${lesson.title}"
         updateFavoriteButton()
         lessonText.text = lesson.explanation
+        notesEditor.setText(getSharedPreferences("python_quest", MODE_PRIVATE)
+            .getString("notes_$index", ""))
         walkthroughText.text = if (lesson.walkthrough.isNotBlank()) lesson.walkthrough else
             "Как разобраться в примере:\n1. Запусти код без изменений и посмотри на результат.\n2. Найди в коде команду или конструкцию из объяснения выше.\n3. Измени одно значение, запусти код ещё раз и сравни результат."
         example.text = lesson.example
