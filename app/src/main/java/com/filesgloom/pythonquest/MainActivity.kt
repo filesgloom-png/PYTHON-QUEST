@@ -371,7 +371,13 @@ class MainActivity : Activity() {
             "from string import Template\nmessage = Template(\"Привет, \$name! Город: \$city.\")\nprint(message.substitute(name=\"Оля\", city=\"Львов\"))",
             "from string import Template\nmessage = Template(\"Привет, \$name! Город: \$city.\")\nprint(message.substitute(name=\"Оля\", city=\"Львов\"))",
             "Создай Template со строкой Привет, \$name! Город: \$city. Подставь имя Оля и город Львов.",
-            { it.trim() == "Привет, Оля! Город: Львов." })
+            { it.trim() == "Привет, Оля! Город: Львов." }),
+        Lesson("JSON: обмен данными", "Преобразуй словари в JSON и обратно",
+            "Модуль json сериализует Python-объекты в текстовый формат JSON и восстанавливает их через loads(). Параметр ensure_ascii=False сохраняет кириллицу читаемой.",
+            "import json\nprofile = {\"name\": \"Оля\", \"level\": 5}\nencoded = json.dumps(profile, ensure_ascii=False)\nprint(encoded)\ndecoded = json.loads(encoded)\nprint(decoded[\"level\"])",
+            "import json\nprofile = {\"name\": \"Оля\", \"level\": 5}\nencoded = json.dumps(profile, ensure_ascii=False)\nprint(encoded)\ndecoded = json.loads(encoded)\nprint(decoded[\"level\"])",
+            "Создай словарь profile с именем Оля и уровнем 5. Преобразуй его в JSON через dumps() с ensure_ascii=False, затем восстанови через loads() и выведи level.",
+            { it.trim() == "{\"name\": \"Оля\", \"level\": 5}\n5" })
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
