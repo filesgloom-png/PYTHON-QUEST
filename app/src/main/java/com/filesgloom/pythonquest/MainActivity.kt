@@ -132,6 +132,12 @@ class MainActivity : Activity() {
             "tasks = [\"учиться\", \"практиковаться\"]\ntasks.append(\"повторять\")\nprint(len(tasks))\ntasks.remove(\"учиться\")\nprint(tasks)",
             "Создай список tasks, добавь элемент через append(), выведи длину, удали первый элемент через remove() и выведи список.",
             { it.trim() == "3\n['практиковаться', 'повторять']" })
+        ,Lesson("Обработка ошибок", "Управляй ошибками через try/except",
+            "Блок try содержит код, который может завершиться ошибкой. except перехватывает указанный тип ошибки и позволяет программе продолжить работу. Перехватывай конкретные исключения, например ValueError.",
+            "try:\n    number = int(\"abc\")\nexcept ValueError:\n    print(\"Это не число\")",
+            "try:\n    number = int(\"abc\")\nexcept ValueError:\n    print(\"Это не число\")",
+            "Внутри try попробуй преобразовать строку \"abc\" в int, а в except ValueError выведи Это не число.",
+            { it.trim() == "Это не число" })
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
