@@ -81,10 +81,11 @@ def _decode_kotlin_string(token):
 
 def _extract_lessons(source):
     list_start = source.index("private val lessons = listOf(")
+    list_end = source.index("\n    )\n\n    override fun onCreate", list_start)
     cursor = list_start
     lessons = []
     while True:
-        call_start = source.find("Lesson(", cursor)
+        call_start = source.find("Lesson(", cursor, list_end)
         if call_start < 0:
             break
         open_paren = call_start + len("Lesson")
@@ -107,15 +108,9 @@ def _extract_lessons(source):
             )
         expected = _decode_kotlin_string(expected_match.group(1))
         lessons.append((title, example, starter, expected))
+        # Other list entries and formatting may appear between constructors.
+        # Restrict searches to the lesson-list boundary and continue from this call.
         cursor = close_paren + 1
-        while cursor < len(source) and source[cursor].isspace():
-            cursor += 1
-        if cursor < len(source) and source[cursor] == ",":
-            cursor += 1
-            continue
-        if cursor < len(source) and source[cursor] == ")":
-            break
-        raise AssertionError("Unexpected text after Lesson(...) constructor")
     return lessons
 
 
@@ -124,8 +119,8 @@ class LessonExampleTests(unittest.TestCase):
     def setUpClass(cls):
         cls.lessons = _extract_lessons(MAIN_ACTIVITY.read_text(encoding="utf-8"))
 
-    def test_course_has_58_lessons(self):
-        self.assertEqual(len(self.lessons), 98)
+    def test_course_has_110_lessons(self):
+        self.assertEqual(len(self.lessons), 110)
 
     def test_every_starter_matches_its_example(self):
         for index, (title, example, starter, _expected) in enumerate(self.lessons, 1):
