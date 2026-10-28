@@ -200,8 +200,8 @@ class MainActivity : Activity() {
             val runner = Python.getInstance().getModule("runner")
             val result = runner.callAttr("run_code", editor.text.toString())
                 ?: throw IllegalStateException("Python runner вернул пустой результат")
-            val ok = result.get("ok").toBoolean()
-            val resultText = result.get("output").toString()
+            val ok = result.get("ok")?.toBoolean() ?: false
+            val resultText = result.get("output")?.toString() ?: ""
             if (!ok) {
                 showOutput(resultText, false)
                 return
