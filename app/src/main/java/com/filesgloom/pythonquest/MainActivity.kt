@@ -1,6 +1,7 @@
 package com.filesgloom.pythonquest
 
 import android.app.Activity
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
 import com.chaquo.python.Python
@@ -37,6 +39,8 @@ class MainActivity : Activity() {
     private lateinit var lessonText: TextView
     private lateinit var example: TextView
     private lateinit var stats: TextView
+    private lateinit var progressText: TextView
+    private lateinit var courseProgress: ProgressBar
     private lateinit var lessonButtons: LinearLayout
 
     private val lessons = listOf(
@@ -133,6 +137,15 @@ class MainActivity : Activity() {
         addText(hero, "Изучай Python.\nПрокачивай навыки.", 29f, white, true)
         addText(hero, "Короткие уроки на русском, практика и уровни — прямо на телефоне.", 15f, muted, false)
         stats = addText(hero, "", 14f, green, true)
+        courseProgress = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
+            max = lessons.size
+            progress = completed.size
+            progressTintList = ColorStateList.valueOf(green)
+            progressBackgroundTintList = ColorStateList.valueOf(panelAlt)
+            minimumHeight = dp(8)
+        }
+        hero.addView(courseProgress, params(top = 5, bottom = 2))
+        progressText = addText(hero, "", 12f, muted, false)
         root.addView(hero, params(top = 18, bottom = 16))
 
         addText(root, "ТВОИ УРОКИ", 13f, green, true)
@@ -222,7 +235,11 @@ class MainActivity : Activity() {
             button.background = rounded(if (i == index) panelAlt else panel, 14)
             button.text = "${if (completed.contains(i)) "✓" else (i + 1).toString()}.  ${lessons[i].title}\n      ${lessons[i].subtitle}"
         }
-        stats.text = "$xp XP   •   Уровень ${1 + xp / 100}   •   Уроков пройдено: ${completed.size}/${lessons.size}"
+        val level = 1 + xp / 100
+        val xpIntoLevel = xp % 100
+        stats.text = "$xp XP   •   Уровень $level   •   Уроков пройдено: ${completed.size}/${lessons.size}"
+        courseProgress.progress = completed.size
+        progressText.text = "Курс: ${completed.size * 100 / lessons.size}%   •   До уровня ${level + 1}: ${100 - xpIntoLevel} XP"
     }
 
     private fun runCode(check: Boolean) {
