@@ -184,15 +184,11 @@ class QuizActivity : Activity() {
             feedback.setTextColor(white)
             feedback.text = "Пока неверно. Попробуй ещё раз в следующем прохождении.\n\nОбъяснение: ${q.explanation}"
         }
-        if (!firstAnswer) {
-            // Повторные ответы не меняют сохранённую историю и не дают повторную награду.
-        } else {
-            getSharedPreferences("python_quest", MODE_PRIVATE).edit()
-                .putStringSet("quiz_answered_ids", answeredIds.map { it.toString() }.toSet())
-                .putInt("quiz_best_score", maxOf(score, correctCount))
-                .apply()
-            score = maxOf(score, correctCount)
-        }
+        score = maxOf(score, correctCount)
+        getSharedPreferences("python_quest", MODE_PRIVATE).edit()
+            .putStringSet("quiz_answered_ids", answeredIds.map { it.toString() }.toSet())
+            .putInt("quiz_best_score", score)
+            .apply()
         for (optionIndex in 0 until optionsBox.childCount) {
             val view = optionsBox.getChildAt(optionIndex)
             if (view is Button) {
