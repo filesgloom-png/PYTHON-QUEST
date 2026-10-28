@@ -561,7 +561,7 @@ class MainActivity : Activity() {
             val ok = result.get("ok")?.toBoolean() ?: false
             val resultText = result.get("output")?.toString() ?: ""
             if (!ok) {
-                showOutput(resultText, false)
+                showOutput(explainPythonError(resultText), false)
                 return
             }
             if (check) {
@@ -584,6 +584,40 @@ class MainActivity : Activity() {
             }
         } catch (e: Exception) {
             showOutput("Не удалось запустить Python: ${e.message ?: e.javaClass.simpleName}", false)
+        }
+    }
+
+    private fun explainPythonError(raw: String): String {
+        val lines = raw.lines()
+        val errorLine = lines.lastOrNull { it.contains("Error:") || it.contains("Exception:") }.orEmpty()
+        val type = errorLine.substringBefore(":").substringAfterLast(" ")
+        val detail = errorLine.substringAfter(":", "").trim()
+        val sourceLine = lines.lastOrNull { it.contains("File \"<python-quest>\", line ") }
+        val lineNumber = sourceLine?.substringAfter("line ")?.substringBefore(",")?.trim()
+        val where = lineNumber?.let { "\nСтрока кода: $it." }.orEmpty()
+        val explanation = when (type) {
+            "SyntaxError" -> "В коде ошибка записи: проверь скобки, кавычки, двоеточия и написание команды."
+            "IndentationError", "TabError" -> "Проблема с отступами. Внутри if, for, while, def и class обычно нужны 4 пробела; не смешивай пробелы и табуляцию."
+            "NameError" -> "Python не знает такое имя. Проверь написание переменной или функции и убедись, что она создана до использования."
+            "TypeError" -> "Операция получила значение неподходящего типа. Проверь, например, не складываешь ли ты текст и число без преобразования."
+            "ValueError" -> "Тип значения подходит, но само значение некорректно для этой операции. Проверь формат данных, например текст перед int()."
+            "ZeroDivisionError" -> "На ноль делить нельзя. Проверь делитель перед операцией /, // или %."
+            "IndexError" -> "Обращение к элементу за пределами списка или строки. Индексы начинаются с 0; проверь длину последовательности."
+            "KeyError" -> "В словаре нет такого ключа. Проверь точное написание ключа или используй dict.get(), если ключ может отсутствовать."
+            "ModuleNotFoundError", "ImportError" -> "Python не смог найти нужный модуль или объект. Проверь название модуля и доступность импорта в приложении."
+            "FileNotFoundError" -> "Файл не найден по указанному пути. Проверь имя и расположение файла."
+            "AttributeError" -> "У объекта нет такого метода или свойства. Проверь имя после точки и тип значения."
+            "RecursionError" -> "Функция вызывает себя слишком много раз. Добавь базовый случай, который останавливает рекурсию."
+            "EOFError" -> "Программа ожидала ввод, которого нет в этом режиме запуска. Используй заранее заданные данные или проверь логику ввода."
+            else -> "Python сообщил об ошибке. Прочитай подробность ниже и проверь строку, где она возникла."
+        }
+        return buildString {
+            append("Разберём ошибку простыми словами.\n")
+            append(explanation)
+            append(where)
+            if (detail.isNotBlank()) append("\nПодробность: $detail")
+            append("\n\nТехнический вывод:\n")
+            append(raw.trim())
         }
     }
 
