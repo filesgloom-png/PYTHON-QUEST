@@ -54,6 +54,8 @@ class MainActivity : Activity() {
     private lateinit var notesEditor: EditText
     private lateinit var noteCountText: TextView
     private lateinit var example: TextView
+    private lateinit var predictionEditor: EditText
+    private lateinit var predictionFeedback: TextView
     private lateinit var stats: TextView
     private lateinit var progressText: TextView
     private lateinit var courseProgress: ProgressBar
@@ -984,6 +986,36 @@ class MainActivity : Activity() {
             background = rounded(Color.rgb(7, 12, 8), 10)
             setPadding(dp(12), dp(12), dp(12), dp(12))
         }
+        addText(lessonCard, "ШАГ 1 · ПРЕДСКАЖИ ВЫВОД", 11f, green, true)
+        addText(lessonCard, "До запуска попробуй понять, что напечатает этот пример. Запиши ожидаемый результат — так ты учишься читать код, а не только нажимать кнопки.", 13f, muted, false)
+        predictionEditor = EditText(this).apply {
+            setTextColor(white)
+            setHintTextColor(muted)
+            textSize = 14f
+            typeface = Typeface.MONOSPACE
+            gravity = Gravity.TOP or Gravity.START
+            setPadding(dp(12), dp(12), dp(12), dp(12))
+            minLines = 2
+            maxLines = 5
+            background = rounded(Color.rgb(7, 12, 8), 10)
+            hint = "Какой вывод ты ожидаешь?"
+            setSingleLine(false)
+        }
+        lessonCard.addView(predictionEditor, params(top = 4, bottom = 6))
+        val predictionButton = Button(this).apply {
+            text = "Проверить мой прогноз"
+            isAllCaps = false
+            setTextColor(Color.rgb(8, 33, 15))
+            background = rounded(green, 12)
+            setOnClickListener { checkPrediction() }
+        }
+        lessonCard.addView(predictionButton, params(bottom = 5))
+        predictionFeedback = addText(lessonCard, "Сначала запиши свой прогноз, затем сравни его с результатом Python.", 13f, muted, false).apply {
+            background = rounded(panelAlt, 10)
+            setPadding(dp(10), dp(9), dp(10), dp(9))
+        }
+        addText(lessonCard, "ШАГ 2 · ПОПРОБУЙ САМ", 11f, green, true)
+        addText(lessonCard, "Теперь измени код или напиши решение задания самостоятельно. Запусти программу и проверь результат.", 13f, muted, false)
         addText(lessonCard, "ТВОЙ КОД PYTHON", 11f, green, true)
         editor = EditText(this).apply {
             setTextColor(white)
@@ -1098,6 +1130,9 @@ class MainActivity : Activity() {
         walkthroughText.text = if (lesson.walkthrough.isNotBlank()) lesson.walkthrough else
             "Как разобраться в примере:\n1. Запусти код без изменений и посмотри на результат.\n2. Найди в коде команду или конструкцию из объяснения выше.\n3. Измени одно значение, запусти код ещё раз и сравни результат."
         example.text = lesson.example
+        predictionEditor.setText("")
+        predictionFeedback.text = "Сначала запиши свой прогноз, затем сравни его с результатом Python."
+        predictionFeedback.setTextColor(muted)
         val savedCode = getSharedPreferences("python_quest", MODE_PRIVATE)
             .getString("code_$index", null)
         editor.setText(savedCode ?: lesson.starter)
@@ -1184,13 +1219,46 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun checkPrediction() {
+        val prediction = predictionEditor.text.toString().trim()
+        if (prediction.isEmpty()) {
+            predictionFeedback.setTextColor(muted)
+            predictionFeedback.text = "Сначала напиши, что, по твоему мнению, выведет пример."
+            return
+        }
+
+        try {
+            val runner = Python.getInstance().getModule("runner")
+            val result = runner.callAttr("run_code", lessons[currentLesson].example)
+                ?: throw IllegalStateException("Python runner вернул пустой результат")
+            val ok = result.callAttr("get", "ok")?.toBoolean() ?: false
+            val actual = result.callAttr("get", "output")?.toString() ?: ""
+            if (!ok) {
+                predictionFeedback.setTextColor(muted)
+                predictionFeedback.text = "Не удалось выполнить учебный пример.\n\n${explainPythonError(actual)}"
+                return
+            }
+
+            if (prediction.trimEnd() == actual.trimEnd()) {
+                predictionFeedback.setTextColor(green)
+                predictionFeedback.text = "Верно! Ты предсказал вывод до запуска.\n\nФактический вывод:\n${actual.trimEnd()}"
+            } else {
+                predictionFeedback.setTextColor(white)
+                predictionFeedback.text = "Пока не совпало — это часть обучения. Сравни свой прогноз с тем, что вывел Python, и найди, какая строка кода объясняет разницу.\n\nФактический вывод:\n${actual.trimEnd()}"
+            }
+        } catch (e: Exception) {
+            predictionFeedback.setTextColor(muted)
+            predictionFeedback.text = "Не удалось проверить прогноз: ${e.message ?: e.javaClass.simpleName}"
+        }
+    }
+
     private fun runCode(check: Boolean) {
         try {
             val runner = Python.getInstance().getModule("runner")
             val result = runner.callAttr("run_code", editor.text.toString())
                 ?: throw IllegalStateException("Python runner вернул пустой результат")
-            val ok = result.get("ok")?.toBoolean() ?: false
-            val resultText = result.get("output")?.toString() ?: ""
+            val ok = result.callAttr("get", "ok")?.toBoolean() ?: false
+            val resultText = result.callAttr("get", "output")?.toString() ?: ""
             if (!ok) {
                 showOutput(explainPythonError(resultText), false)
                 return
