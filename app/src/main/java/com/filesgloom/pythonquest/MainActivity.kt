@@ -1231,8 +1231,8 @@ class MainActivity : Activity() {
             val runner = Python.getInstance().getModule("runner")
             val result = runner.callAttr("run_code", lessons[currentLesson].example)
                 ?: throw IllegalStateException("Python runner вернул пустой результат")
-            val ok = result.get("ok")?.toBoolean() ?: false
-            val actual = result.get("output")?.toString() ?: ""
+            val ok = result.getItem("ok")?.toBoolean() ?: false
+            val actual = result.getItem("output")?.toString() ?: ""
             if (!ok) {
                 predictionFeedback.setTextColor(muted)
                 predictionFeedback.text = "Не удалось выполнить учебный пример.\n\n${explainPythonError(actual)}"
@@ -1257,8 +1257,8 @@ class MainActivity : Activity() {
             val runner = Python.getInstance().getModule("runner")
             val result = runner.callAttr("run_code", editor.text.toString())
                 ?: throw IllegalStateException("Python runner вернул пустой результат")
-            val ok = result.get("ok")?.toBoolean() ?: false
-            val resultText = result.get("output")?.toString() ?: ""
+            val ok = result.getItem("ok")?.toBoolean() ?: false
+            val resultText = result.getItem("output")?.toString() ?: ""
             if (!ok) {
                 showOutput(explainPythonError(resultText), false)
                 return
